@@ -71,3 +71,75 @@ model VerificationToken {
 
     @@unique([identifier, token])
 }
+
+model History {
+  history_id            Int       @id @default(autoincrement())
+  datetime              DateTime  @unique
+  date_id               Int @unique
+  price                 Float
+  temperature           Float
+  precipitation         Float
+  cloud_cover           Int
+  wind_speed_10m        Int
+  shortwave_radiation   Int
+  modified_date         DateTime  @default(now())
+  weather_code_id       Int
+
+  datedimension         DateDimension?
+  weather_code          WeatherCodeDimension @relation(fields: [weather_code_id], references: [weather_code_id])
+}
+
+model Forecast {
+  forecast_id       Int       @id @default(autoincrement())
+  datetime          DateTime  @unique
+  date_id           Int @unique
+  price             Int
+  modified_date     DateTime  @default(now())
+
+  datedimension     DateDimension?
+}
+
+model DateDimension {
+  date_id      Int      @id @default(autoincrement())
+  date_value   DateTime @unique
+  year         Int
+  quarter      Int
+  month        Int
+  day          Int
+  day_of_week  Int
+  day_name     String
+  month_name   String
+  year_month   String
+  year_quarter String
+  weekend_flag Boolean
+  holiday_flag Boolean
+
+  history      History   @relation(fields: [date_id], references: [date_id])
+  forecast     Forecast  @relation(fields: [date_id], references: [date_id])
+}
+
+model WeatherCodeDimension {
+  weather_code_id       Int      @id @default(autoincrement())
+  description_code      String
+
+  histories             History[]
+
+}
+
+model SubscribeUser {
+  user_id               Int       @id @default(autoincrement())
+  name                  String
+  email                 String
+  subscription_type_id  Int
+  active_subscription   Boolean   @default(true)
+  modified_date         DateTime  @default(now())
+
+  subscription_type     SubscriptionTypeDimension @relation(fields: [subscription_type_id], references: [subscription_type_id])
+}
+
+model SubscriptionTypeDimension {
+  subscription_type_id        Int      @id @default(autoincrement())
+  description_subscription    String
+
+  subscribeusers              SubscribeUser[]
+}
