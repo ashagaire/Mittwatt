@@ -21,11 +21,13 @@
     "@trpc/next": "next",
     "@trpc/react-query": "next",
     "@trpc/server": "next",
+    "date-fns": "^3.6.0",
     "next": "^14.2.1",
     "next-auth": "^4.24.6",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "superjson": "^2.2.1",
+    "tsx": "^4.10.5",
     "zod": "^3.22.4"
   },
   "devDependencies": {
@@ -47,5 +49,8 @@
   "ct3aMetadata": {
     "initVersion": "7.30.2"
   },
-  "packageManager": "pnpm@8.15.5"
+  "packageManager": "pnpm@8.15.5",
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  }
 }
