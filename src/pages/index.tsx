@@ -15,17 +15,22 @@ export default function Home() {
   };
   const hello = api.post.hello.useQuery({ text: "from tRPC" });
 
+  // get real prices for today
   const historyToday = api.price.getHistoryDay.useQuery({
     date: currentDay(new Date()),
   });
 
   console.log(historyToday.data);
 
-  const forecastToday = api.price.getForecastDay.useQuery({
-    date: currentDay(new Date()),
+  // get forecast price for the day after tomorrow
+  const dayAfterTomorrow = new Date(
+    new Date().setDate(new Date().getDate() + 2),
+  );
+  const forecastDayAfterTomorrow = api.price.getForecastDay.useQuery({
+    date: currentDay(dayAfterTomorrow),
   });
 
-  console.log(forecastToday.data);
+  console.log(forecastDayAfterTomorrow.data);
 
   return (
     <>
