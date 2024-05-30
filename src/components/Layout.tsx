@@ -2,6 +2,7 @@ import Head from "next/head";
 import Link from "next/link";
 import React from "react";
 import { api } from "~/utils/api";
+import Image from "next/image";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -16,35 +17,55 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className=" flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+        <nav className="">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="flex h-16 items-center justify-between">
+              <div className="flex items-center">
+                <Link href="/" className="text-xl font-bold text-white">
+                  <Image
+                    src={"/images/logo.jpg"}
+                    width={50}
+                    height={50}
+                    alt="Mittwatt"
+                  />
+                </Link>
+              </div>
+              <div className="flex items-center space-x-4">
+                <Link
+                  href="/"
+                  className="rounded-md px-3 py-2 text-sm font-medium text-white"
+                >
+                  Home
+                </Link>
+                <Link
+                  href="/current"
+                  className="rounded-md px-3 py-2 text-sm font-medium text-white"
+                >
+                  Current
+                </Link>
+                <Link
+                  href="/future"
+                  className="rounded-md px-3 py-2 text-sm font-medium text-white"
+                >
+                  Future
+                </Link>
+                <Link
+                  href="/past"
+                  className="rounded-md px-3 py-2 text-sm font-medium text-white"
+                >
+                  Past
+                </Link>
+              </div>
+            </div>
+          </div>
+        </nav>
+
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
           <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
             Welcome to{" "}
             <span className="text-[hsl(280,100%,70%)]">Mittwatt</span> App
           </h1>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-              href="https://create.t3.gg/en/usage/first-steps"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">First Steps →</h3>
-              <div className="text-lg">
-                Just the basics - Everything you need to know to set up your
-                database and authentication.
-              </div>
-            </Link>
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-              href="https://create.t3.gg/en/introduction"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">Documentation →</h3>
-              <div className="text-lg">
-                Learn more about Create T3 App, the libraries it uses, and how
-                to deploy it.
-              </div>
-            </Link>
-          </div>
+
           {children}
         </div>
       </main>
