@@ -1,11 +1,11 @@
-import { signIn, signOut, useSession } from "next-auth/react";
-import Head from "next/head";
-import Link from "next/link";
-import Image from "next/image";
+//import { signIn, signOut, useSession } from "next-auth/react";
+//import Head from "next/head";
+//import Link from "next/link";
+//import Image from "next/image";
 import { useState } from "react";
 import Historical from "~/components/Historical";
 
-import { api } from "~/utils/api";
+//import { api } from "~/utils/api";
 
 export default function Current() {
   const [dayValue, setDayValue] = useState(new Date());
