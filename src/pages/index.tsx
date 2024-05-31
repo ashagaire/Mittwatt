@@ -5,32 +5,7 @@ import Link from "next/link";
 import { api } from "~/utils/api";
 
 export default function Home() {
-  // a function to get a date and returns an object with its day, month, year to be used as an input for queries
-  const currentDay = (dayValue: Date) => {
-    return {
-      day: dayValue.getDate(),
-      month: dayValue.getMonth(),
-      year: dayValue.getFullYear(),
-    };
-  };
   const hello = api.post.hello.useQuery({ text: "from tRPC" });
-
-  // get real prices for today
-  const historyToday = api.price.getHistoryDay.useQuery({
-    date: currentDay(new Date()),
-  });
-
-  console.log(historyToday.data);
-
-  // get forecast price for the day after tomorrow
-  const dayAfterTomorrow = new Date(
-    new Date().setDate(new Date().getDate() + 2),
-  );
-  const forecastDayAfterTomorrow = api.price.getForecastDay.useQuery({
-    date: currentDay(dayAfterTomorrow),
-  });
-
-  console.log(forecastDayAfterTomorrow.data);
 
   return (
     <>

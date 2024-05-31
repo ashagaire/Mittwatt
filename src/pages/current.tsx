@@ -2,26 +2,13 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
+import Historical from "~/components/Historical";
 
 import { api } from "~/utils/api";
 
 export default function Current() {
-  // a function to get a date and returns an object with its day, month, year to be used as an input for queries
-  const currentDay = (dayValue: Date) => {
-    return {
-      day: dayValue.getDate(),
-      month: dayValue.getMonth(),
-      year: dayValue.getFullYear(),
-    };
-  };
-  // get real prices for today
-  const historyToday = api.price.getHistoryDay.useQuery({
-    date: currentDay(new Date()),
-  });
-
-  console.log(historyToday.data);
-
-  // get forecast price for the day after tomorrow
+  const [dayValue, setDayValue] = useState(new Date());
 
   return (
     <>
@@ -31,28 +18,42 @@ export default function Current() {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="flex h-16 items-center justify-between">
               <div className="flex items-center space-x-4">
-                <Link
-                  href="/current/yesterday"
+                <a
                   className="rounded-md px-3 py-2 text-sm font-medium text-white"
+                  href="#"
+                  onClick={() =>
+                    setDayValue(
+                      new Date(new Date().setDate(new Date().getDate() - 1)),
+                    )
+                  }
                 >
                   Yesterday
-                </Link>
-                <Link
-                  href="/today"
+                </a>
+                <a
                   className="rounded-md px-3 py-2 text-sm font-medium text-white"
+                  href="#"
+                  onClick={() => setDayValue(new Date())}
                 >
                   Today
-                </Link>
-                <Link
-                  href="/tomorrow"
+                </a>
+                <a
                   className="rounded-md px-3 py-2 text-sm font-medium text-white"
+                  href="#"
+                  onClick={() =>
+                    setDayValue(
+                      new Date(new Date().setDate(new Date().getDate() + 1)),
+                    )
+                  }
                 >
                   Tomorrow
-                </Link>
+                </a>
               </div>
             </div>
           </div>
         </nav>
+        <div className="flex flex-col items-center justify-center gap-4">
+          <Historical dayProp={dayValue} />
+        </div>
       </div>
     </>
   );
