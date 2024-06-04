@@ -1,5 +1,13 @@
 import { api } from "~/utils/api";
 import { useMemo, useEffect } from "react";
+import {
+  LineChart,
+  Line,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+} from "recharts";
 
 interface HistoricalProps {
   dayProp: Date;
@@ -38,6 +46,26 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
 
   return (
     <>
+      <div className="h-96 w-full">
+        <LineChart
+          width={600}
+          height={300}
+          data={data}
+          margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+        >
+          <Line type="monotone" dataKey="price" stroke="#8884d8" />
+          <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+          <XAxis
+            dataKey="dateData.dateValue"
+            tickFormatter={(value) => {
+              return value.getHours() + ":00";
+            }}
+          />
+          <YAxis />
+          <Tooltip />
+        </LineChart>
+      </div>
+
       <div className="text-white">
         {data ? data[1]?.dateData.dateValue.toDateString() : "undefined"}
 
@@ -53,7 +81,7 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
               data.map((item: any, index: number) => (
                 <tr key={index}>
                   <td className="border border-gray-500 px-4 py-2">
-                    {item.dateData.dateValue.getHours() + 1}
+                    {item.dateData.dateValue.getHours() + ":00"}
                   </td>
                   <td className="border border-gray-500 px-4 py-2">
                     {item.price}
