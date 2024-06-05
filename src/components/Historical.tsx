@@ -1,5 +1,7 @@
 import { api } from "~/utils/api";
-import { useMemo, useEffect } from "react";
+import { useMemo, useEffect, useState } from "react";
+import Image from "next/image";
+
 import {
   LineChart,
   Line,
@@ -14,6 +16,9 @@ interface HistoricalProps {
 }
 
 const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
+  const [maximumPrice, setMaximumPrice] = useState(Number.MIN_SAFE_INTEGER);
+  const [minimumPrice, setMinimumPrice] = useState(Number.MAX_SAFE_INTEGER);
+  const [averagePrice, setAveragePrice] = useState(0);
   // a function to get a date and returns an object with its day, month, year to be used as an input for queries
   const currentDay = (dayValue: Date) => {
     return {
@@ -32,12 +37,40 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
   });
 
   // Debugging: Controlled logging
-  /*useEffect(() => {
-    console.log("current", data);
-  }, [data]);*/
+  useEffect(() => {
+    if (data) {
+      setMinimumPrice(
+        data.reduce((min, obj) => {
+          return Math.min(min, obj.price);
+        }, Number.MAX_SAFE_INTEGER),
+      );
+      console.log("min", minimumPrice);
+
+      setMaximumPrice(
+        data.reduce((max, obj) => {
+          return Math.max(max, obj.price);
+        }, Number.MIN_SAFE_INTEGER),
+      );
+      console.log("min", maximumPrice);
+
+      setAveragePrice(
+        data.reduce((sum, obj) => {
+          return sum + obj.price;
+        }, 0) / data.length,
+      );
+      console.log("average", averagePrice);
+    }
+    //console.log("current", data);
+  }, [data]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <>
+        <div className=" inline h-8 w-8 text-gray-200">
+          <span className="loader inline h-8 w-8 text-gray-200"></span>
+        </div>
+      </>
+    );
   }
 
   if (error) {
@@ -67,6 +100,31 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
       </div>
 
       <div className="text-white">
+        <table className="w-full table-auto border-collapse border border-gray-500">
+          <thead>
+            <tr>
+              <th className="border border-gray-500 px-4 py-2">Lowest</th>
+              <th className="border border-gray-500 px-4 py-2">Highest</th>
+              <th className="border border-gray-500 px-4 py-2">Average</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td className="border border-gray-500 px-4 py-2">
+                {minimumPrice.toFixed(2) + " €"}
+              </td>
+              <td className="border border-gray-500 px-4 py-2">
+                {maximumPrice.toFixed(2) + " €"}
+              </td>
+              <td className="border border-gray-500 px-4 py-2">
+                {averagePrice.toFixed(2) + " €"}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div className="text-white">
         {data ? data[1]?.dateData.dateValue.toDateString() : "undefined"}
 
         <table className="w-full table-auto border-collapse border border-gray-500">
@@ -84,7 +142,7 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
                     {item.dateData.dateValue.getHours() + ":00"}
                   </td>
                   <td className="border border-gray-500 px-4 py-2">
-                    {item.price}
+                    {item.price.toFixed(2) + " €"}
                   </td>
                 </tr>
               ))
