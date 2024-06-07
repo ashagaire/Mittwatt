@@ -23,7 +23,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <div className="flex items-center">
                 <Link href="/" className="text-xl font-bold text-white">
                   <Image
-                    src={"/images/logo.jpg"}
+                    src={"/images/logo.png"}
                     width={50}
                     height={50}
                     alt="Mittwatt"
