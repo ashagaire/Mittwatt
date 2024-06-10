@@ -111,13 +111,13 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
           <tbody>
             <tr>
               <td className="border border-gray-500 px-4 py-2">
-                {minimumPrice.toFixed(2) + " €"}
+                {minimumPrice.toFixed(2) + " c/kWh"}
               </td>
               <td className="border border-gray-500 px-4 py-2">
-                {maximumPrice.toFixed(2) + " €"}
+                {maximumPrice.toFixed(2) + " c/kWh"}
               </td>
               <td className="border border-gray-500 px-4 py-2">
-                {averagePrice.toFixed(2) + " €"}
+                {averagePrice.toFixed(2) + " c/kWh"}
               </td>
             </tr>
           </tbody>
@@ -142,7 +142,7 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
                     {item.dateData.dateValue.getHours() + ":00"}
                   </td>
                   <td className="border border-gray-500 px-4 py-2">
-                    {item.price.toFixed(2) + " €"}
+                    {item.price.toFixed(2) + " c/kWh"}
                   </td>
                 </tr>
               ))
