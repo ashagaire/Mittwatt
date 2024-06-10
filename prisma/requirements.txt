@@ -1,0 +1,8 @@
+requests_cache==1.2.0
+openmeteo_requests==1.2.0
+retry_requests==2.0.0
+pandas==2.2.2
+numpy==1.26.3
+requests==2.31.0
+schedule==1.2.2
+pytz==2024.1

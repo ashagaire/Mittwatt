@@ -75,15 +75,15 @@ model VerificationToken {
 model HistoricalElectricityWeather {
   id                  Int  @id @default(autoincrement())
   dateId              Int  @unique
-  price               Float
+  price               Float?
   temperature         Float
   precipitation       Float
   cloudCover          Int
   windSpeed10m        Int
   shortwaveRadiation  Int
   weatherCodeId       Int
-  createdDate         DateTime @default(now())
-  modifiedDate        DateTime @default(now())
+  createdDate         DateTime
+  modifiedDate        DateTime
 
   dateData            CalendarDate @relation(fields: [dateId], references: [id])
   weatherCode         WeatherCode @relation(fields: [weatherCodeId], references: [id])
@@ -119,7 +119,7 @@ model CalendarDate {
 }
 
 model WeatherCode {
-  id               Int      @id @default(autoincrement())
+  id               Int      @id
   descriptionCode  String
   createdDate      DateTime @default(now())
   modifiedDate     DateTime @default(now())
