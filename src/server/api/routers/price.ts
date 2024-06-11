@@ -1,5 +1,5 @@
 import { date, z } from "zod";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 import {
   createTRPCRouter,
   protectedProcedure,
@@ -46,10 +46,11 @@ export const priceRouter = createTRPCRouter({
     getHistoryDay: publicProcedure
         .input(z.object({ date: z.object({ day: z.number(), month: z.number(), year: z.number() }) }))
         .query(async ({ input, ctx }) => {
-            return ctx.db.historicalElectricityWeather.findMany({
+            const dateIds = await dateIdsForDay(ctx, input.date.year, input.date.month, input.date.day);
+            const historicalData = await ctx.db.historicalElectricityWeather.findMany({
                 where: {
                 dateId: {
-                    in: await dateIdsForDay(ctx, input.date.year, input.date.month, input.date.day),
+                    in: dateIds,
                 }
                 },
                 select: {
@@ -62,6 +63,9 @@ export const priceRouter = createTRPCRouter({
                 }
                 }
             });
+
+            // Ensure dateValue is correctly interpreted as local datetime before sending to the frontend
+            return historicalData;
         }),
 
     // get forecast data for a given day

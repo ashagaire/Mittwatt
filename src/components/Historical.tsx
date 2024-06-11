@@ -39,23 +39,24 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
   // Debugging: Controlled logging
   useEffect(() => {
     if (data) {
+      console.log("data", data);
       setMinimumPrice(
         data.reduce((min, obj) => {
-          return Math.min(min, obj.price);
+          return Math.min(min, obj?.price ?? Number.MAX_SAFE_INTEGER);
         }, Number.MAX_SAFE_INTEGER),
       );
       console.log("min", minimumPrice);
 
       setMaximumPrice(
         data.reduce((max, obj) => {
-          return Math.max(max, obj.price);
+          return Math.max(max, obj?.price ?? Number.MIN_SAFE_INTEGER);
         }, Number.MIN_SAFE_INTEGER),
       );
       console.log("min", maximumPrice);
 
       setAveragePrice(
         data.reduce((sum, obj) => {
-          return sum + obj.price;
+          return sum + (obj?.price ?? 0);
         }, 0) / data.length,
       );
       console.log("average", averagePrice);
@@ -91,7 +92,7 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
           <XAxis
             dataKey="dateData.dateValue"
             tickFormatter={(value) => {
-              return value.getHours() + ":00";
+              return value.getUTCHours() + ":00";
             }}
           />
           <YAxis />
@@ -139,10 +140,12 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
               data.map((item: any, index: number) => (
                 <tr key={index}>
                   <td className="border border-gray-500 px-4 py-2">
-                    {item.dateData.dateValue.getHours() + ":00"}
+                    {item.dateData.dateValue.getUTCHours() + ":00"}
                   </td>
                   <td className="border border-gray-500 px-4 py-2">
-                    {item.price.toFixed(2) + " c/kWh"}
+                    {item.price?.toFixed(2)
+                      ? item.price?.toFixed(2) + " c/kWh"
+                      : "Not yet calculated"}
                   </td>
                 </tr>
               ))
