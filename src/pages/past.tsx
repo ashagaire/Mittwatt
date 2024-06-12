@@ -7,20 +7,23 @@ import { useState, useEffect } from "react";
 import { api } from "~/utils/api";
 
 export default function Past() {
-  const data = api.price.getHistoryPeriod.useQuery({
-    startDate: new Date(new Date().setDate(new Date().getDate() - 1)),
-    endDate: new Date(),
-  });
+  const [data, setData] = useState<any>(null);
+  const fetchData = async () => {
+    const { data } = await api.price.getHistoryPeriod.useQuery({
+      startDate: new Date(new Date().setDate(new Date().getDate() - 1)),
+      endDate: new Date(),
+    });
+    setData(data);
+  };
 
   useEffect(() => {
-    if (data) {
-      console.log("data", data);
-    }
-  }, [data]);
+    fetchData();
+  }, []);
 
   return (
     <>
-      <div>Past</div>
+      {data && <div>{data.length}</div>}
+      {!data && <div>Loading data...</div>}
     </>
   );
 }
