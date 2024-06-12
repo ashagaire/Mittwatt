@@ -64,7 +64,6 @@ export const priceRouter = createTRPCRouter({
                 }
             });
 
-            // Ensure dateValue is correctly interpreted as local datetime before sending to the frontend
             return historicalData;
         }),
 
