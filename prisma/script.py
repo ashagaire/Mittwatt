@@ -20,7 +20,6 @@ logging.basicConfig(
     ]
 )
 
-
 def get_historical_elec_prices(url):
     """
     Downloads data from API and saves it to a file.
@@ -31,21 +30,15 @@ def get_historical_elec_prices(url):
             with open('downloaded_file.xlsx', 'wb') as file:
                 file.write(response.content)
             downloaded_df = pd.read_excel('downloaded_file.xlsx', skiprows=3)
-            downloaded_df = downloaded_df.rename(
-                columns={'Aika': 'date_value', 'Hinta (snt/kWh)': 'price'})
-            downloaded_df = downloaded_df.drop_duplicates(
-                keep='first', subset=['date_value'], ignore_index=True)
-            downloaded_df['date_value'] = pd.to_datetime(
-                downloaded_df['date_value'], format="%Y-%m-%d %H:%M", errors='coerce')
-            downloaded_df['date_value'] = downloaded_df['date_value'].apply(
-                truncate_to_midnight)
+            downloaded_df = downloaded_df.rename(columns={'Aika': 'date_value', 'Hinta (snt/kWh)': 'price'})
+            downloaded_df = downloaded_df.drop_duplicates(keep='first', subset=['date_value'], ignore_index=True)
+            downloaded_df['date_value'] = pd.to_datetime(downloaded_df['date_value'], format="%Y-%m-%d %H:%M", errors='coerce')
+            downloaded_df['date_value'] = downloaded_df['date_value'].apply(truncate_to_midnight)
             return downloaded_df
         else:
-            logging.error(
-                'Failed to download the file. Status code:', response.status_code)
+            logging.error('Failed to download the file. Status code:', response.status_code)
     except Exception as e:
         logging.error(f"Failed to fetch data from this {url}: {e}")
-
 
 def get_today_tomorrow_elec_prices(url, date_today, timezone):
     """
@@ -55,48 +48,36 @@ def get_today_tomorrow_elec_prices(url, date_today, timezone):
         response = requests.get(url)
         if response.status_code == 200:
             today_tomorrow_elec_prices_json = response.json()
-            today_tomorrow_elec_prices = pd.DataFrame.from_records(
-                today_tomorrow_elec_prices_json['prices'], columns=['price', 'startDate'])
-            today_tomorrow_elec_prices['startDate'] = pd.to_datetime(
-                today_tomorrow_elec_prices['startDate'], errors='coerce').dt.tz_convert(timezone)
-            today_tomorrow_elec_prices['startDate'] = pd.to_datetime(
-                today_tomorrow_elec_prices['startDate'], format="%Y-%m-%d %H:%M:%S", errors='coerce').dt.tz_localize(None)
-            today_tomorrow_elec_prices = today_tomorrow_elec_prices[today_tomorrow_elec_prices['startDate'] > date_today].reset_index(
-                drop=True)
+            today_tomorrow_elec_prices = pd.DataFrame.from_records(today_tomorrow_elec_prices_json['prices'], columns=['price', 'startDate'])
+            today_tomorrow_elec_prices['startDate'] = pd.to_datetime(today_tomorrow_elec_prices['startDate'], errors='coerce').dt.tz_convert(timezone)
+            today_tomorrow_elec_prices['startDate'] = pd.to_datetime(today_tomorrow_elec_prices['startDate'], format="%Y-%m-%d %H:%M:%S", errors='coerce').dt.tz_localize(None)
+            today_tomorrow_elec_prices = today_tomorrow_elec_prices[today_tomorrow_elec_prices['startDate'] > date_today].reset_index(drop=True)
             return today_tomorrow_elec_prices
         else:
-            raise Exception(
-                f"Failed to fetch tomorrow electricity prices. Status code: {response.status_code}")
+            raise Exception(f"Failed to fetch tomorrow electricity prices. Status code: {response.status_code}")
     except Exception as e:
         logging.error(f"Error fetching tomorrow electricity prices: {e}")
-
 
 def insert_data_weather_and_elec(table_name, table_columns, url, weather_data, cursor, conn):
     """
     Inserts data from a DataFrame into SQLite fact table
     """
     finland_tz = pytz.timezone('Europe/Helsinki')
-    date_today = datetime.now().replace(hour=00, minute=0, second=0)
+    date_today = datetime.now().replace(hour= 00, minute=0, second=0)
     now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     if 'excel-export' in url:
-        elec_prices = get_historical_elec_prices(
-            'https://porssisahko.net/api/internal/excel-export')
-        print(elec_prices)
+        elec_prices = get_historical_elec_prices('https://porssisahko.net/api/internal/excel-export')
         elec_prices.set_index('date_value', inplace=True)
     else:
-        elec_prices = get_today_tomorrow_elec_prices(
-            url, date_today, finland_tz)
+        elec_prices = get_today_tomorrow_elec_prices(url, date_today, finland_tz)
         elec_prices.set_index('startDate', inplace=True)
-        weather_data = weather_data.query(
-            'date_value > @date_today').reset_index(drop=True)
+        weather_data = weather_data.query('date_value > @date_today').reset_index(drop=True)
     weather_data['created'] = now
     weather_data['modified'] = now
-    weather_data['price'] = weather_data['date_value'].map(
-        elec_prices['price'])
+    weather_data['price'] = weather_data['date_value'].map(elec_prices['price'])
     columns_list = table_columns.split(", ")
     placeholders = ", ".join(["?" for _ in range(len(columns_list))])
-    update_columns = ", ".join(
-        [f"{col}=excluded.{col}" for col in columns_list if col not in ("dateId", "createdDate")])
+    update_columns = ", ".join([f"{col}=excluded.{col}" for col in columns_list if col not in ("dateId", "createdDate")])
     query = f'''
     INSERT INTO {table_name} ({table_columns})
     VALUES ({placeholders})
@@ -104,21 +85,18 @@ def insert_data_weather_and_elec(table_name, table_columns, url, weather_data, c
     '''
     try:
         for _, row in weather_data.iterrows():
-            cursor.execute(
-                'SELECT id FROM CalendarDate WHERE dateValue = ?;', (str(row['date_value']),))
+            cursor.execute('SELECT id FROM CalendarDate WHERE dateValue = ?;', (str(row['date_value']),))
             date_id = cursor.fetchone()[0]
             row = list(row)[1:]
             row.insert(0, date_id)
-            cursor.execute(query, tuple(row))
+            cursor.execute(query, tuple(row))    
         conn.commit()
     except Exception as e:
         logging.error(f"Error inserting data into {table_name}: {e}")
 
-
 def truncate_to_midnight(dt: datetime) -> datetime:
     dt = dt + timedelta(hours=1)
     return dt.replace(minute=0, second=0, microsecond=0)
-
 
 def insert_data_dim_table(table_name, table_columns, data, cursor, conn):
     """
@@ -126,16 +104,14 @@ def insert_data_dim_table(table_name, table_columns, data, cursor, conn):
     """
     if isinstance(data, str):
         data = pd.read_csv(data, sep=';', header=None)
-    placeholders = ", ".join(
-        ["?" for _ in range(len(table_columns.split(",")))])
+    placeholders = ", ".join(["?" for _ in range(len(table_columns.split(",")))])
     query = f'INSERT INTO {table_name} ({table_columns}) VALUES ({placeholders});'
     try:
         for _, row in data.iterrows():
-            cursor.execute(query, tuple(row))
+            cursor.execute(query, tuple(row))    
         conn.commit()
     except Exception as e:
         logging.error(f"Error inserting data into {table_name}: {e}")
-
 
 def initialize_date_dataframe(start_date, end_date, freq):
     """
@@ -143,41 +119,38 @@ def initialize_date_dataframe(start_date, end_date, freq):
     """
     date_range = pd.date_range(start=start_date, end=end_date, freq=freq)
     dates_df = pd.DataFrame({
-        'date_value': date_range.strftime('%Y-%m-%d %H:%M:%S'),
-        'year': date_range.year,
-        'quarter': date_range.quarter,
-        'month': date_range.month,
-        'day': date_range.day,
-        'hour': date_range.hour,
-        'day_of_week': date_range.dayofweek,
-        'day_name': date_range.strftime('%A'),
-        'month_name': date_range.strftime('%B'),
-        'year_month': date_range.strftime('%Y-%m')
-    })
+            'date_value': date_range.strftime('%Y-%m-%d %H:%M:%S'),
+            'year': date_range.year,
+            'quarter': date_range.quarter,
+            'month': date_range.month,
+            'day': date_range.day,
+            'hour': date_range.hour,
+            'day_of_week': date_range.dayofweek,
+            'day_name': date_range.strftime('%A'),
+            'month_name': date_range.strftime('%B'),
+            'year_month': date_range.strftime('%Y-%m')
+        })
     return dates_df
 
-
-def get_weather_data(expire_after,
-                     retries,
+def get_weather_data(expire_after, 
+                     retries, 
                      backoff_factor,
-                     url,
-                     latitude,
+                     url, 
+                     latitude, 
                      longitude,
-                     timezone="auto",
-                     start_date=None,
-                     end_date=None,
-                     past_days=None,
-                     forecast_days=None
+                     timezone = "auto",
+                     start_date = None,
+                     end_date = None,
+                     past_days = None,
+                     forecast_days = None
                      ):
     """
     Retrieves weather data from an API and returns it as a pandas DataFrame.
     """
     try:
-        cache_session = requests_cache.CachedSession(
-            '.cache', expire_after=expire_after)
-        retry_session = retry(cache_session, retries=retries,
-                              backoff_factor=backoff_factor)
-        openmeteo = openmeteo_requests.Client(session=retry_session)
+        cache_session = requests_cache.CachedSession('.cache', expire_after = expire_after)
+        retry_session = retry(cache_session, retries = retries, backoff_factor = backoff_factor)
+        openmeteo = openmeteo_requests.Client(session = retry_session)
         if 'archive' in url:
             params = {
                 "latitude": latitude,
@@ -200,27 +173,23 @@ def get_weather_data(expire_after,
         response = responses[0]
         hourly = response.Hourly()
         hourly_data = {"date_value": pd.date_range(
-            start=pd.to_datetime(hourly.Time(), unit='s',
-                                 utc=True).strftime("%Y-%m-%d %H:%M:%S"),
-            end=pd.to_datetime(hourly.TimeEnd(),  unit='s',
-                               utc=True).strftime("%Y-%m-%d %H:%M:%S"),
-            freq=pd.Timedelta(seconds=hourly.Interval(), unit='h'),
-            inclusive="left"
+            start = pd.to_datetime(hourly.Time(), unit='s', utc = True).strftime("%Y-%m-%d %H:%M:%S"),
+            end = pd.to_datetime(hourly.TimeEnd(),  unit='s', utc = True).strftime("%Y-%m-%d %H:%M:%S"),
+            freq = pd.Timedelta(seconds = hourly.Interval(), unit='h'),
+            inclusive = "left"
         )}
         hourly_data["temperature_2m"] = hourly.Variables(0).ValuesAsNumpy()
         hourly_data["precipitation"] = hourly.Variables(1).ValuesAsNumpy()
         hourly_data["weather_code"] = hourly.Variables(2).ValuesAsNumpy()
         hourly_data["cloud_cover"] = hourly.Variables(3).ValuesAsNumpy()
         hourly_data["wind_speed_10m"] = hourly.Variables(4).ValuesAsNumpy()
-        hourly_data["shortwave_radiation"] = hourly.Variables(
-            5).ValuesAsNumpy()
+        hourly_data["shortwave_radiation"] = hourly.Variables(5).ValuesAsNumpy()
         hourly_data['price'] = np.NaN
-        hourly_dataframe = pd.DataFrame(data=hourly_data)
+        hourly_dataframe = pd.DataFrame(data = hourly_data)
         return hourly_dataframe
     except Exception as e:
         logging.error(f"Error fetching data from {url}: {e}")
         return pd.DataFrame()
-
 
 def initialize_database():
     """
@@ -234,61 +203,58 @@ def initialize_database():
         result = cursor.fetchone()[0]
         if result == 0:
             logging.info('Database is empty. The database will be populated')
-            # populate weather_code table
+            #populate weather_code table
             insert_data_dim_table(
                 'WeatherCode',
-                'id, descriptionCode',
-                'weather_code.csv',
-                cursor,
+                'id, descriptionCode', 
+                'weather_code.csv', 
+                cursor, 
                 sqliteConnection
             )
-            # populate subscription_type table
+            #populate subscription_type table
             insert_data_dim_table(
                 'SubscriptionType',
-                'id, descriptionSubscription',
-                'subscription_types.csv',
-                cursor,
+                'id, descriptionSubscription', 
+                'subscription_types.csv', 
+                cursor, 
                 sqliteConnection
             )
-            # create date dataframe
-            date_df = initialize_date_dataframe(
-                '2022-01-01', '2024-12-31', 'h')
+            #create date dataframe
+            date_df = initialize_date_dataframe('2022-01-01', '2024-12-31', 'h')
             # Save to SQLite database
             insert_data_dim_table(
                 'CalendarDate',
-                'dateValue, year, quarter, month, day, hour, dayOfWeek, dayName, monthName, yearMonth',
-                date_df,
-                cursor,
+                'dateValue, year, quarter, month, day, hour, dayOfWeek, dayName, monthName, yearMonth', 
+                date_df, 
+                cursor, 
                 sqliteConnection
             )
-            # get historical weather data
+            #get historical weather data
             weather_archive_df = get_weather_data(
-                expire_after=-1,
-                retries=5,
-                backoff_factor=0.2,
-                timezone="auto",
-                url="https://archive-api.open-meteo.com/v1/archive",
-                latitude=64,
-                longitude=26,
-                start_date="2022-01-01",
-                end_date=(date.today() - timedelta(days=5)
-                          ).strftime("%Y-%m-%d")
+                expire_after = -1, 
+                retries =5, 
+                backoff_factor = 0.2,
+                timezone = "auto", 
+                url = "https://archive-api.open-meteo.com/v1/archive", 
+                latitude = 64, 
+                longitude = 26, 
+                start_date = "2022-01-01",
+                end_date = (date.today() - timedelta(days = 5)).strftime("%Y-%m-%d")
             )
-            # get current and forecast weather data for the nex 14 days
+            #get current and forecast weather data for the nex 14 days
             weather_current_and_forecast = get_weather_data(
-                expire_after=3600,
-                retries=5,
-                backoff_factor=0.2,
-                timezone="auto",
-                url="https://api.open-meteo.com/v1/forecast",
-                latitude=64,
-                longitude=26,
-                past_days=4,
-                forecast_days=14
+                expire_after = 3600, 
+                retries =5, 
+                backoff_factor = 0.2,
+                timezone = "auto",
+                url = "https://api.open-meteo.com/v1/forecast", 
+                latitude = 64, 
+                longitude = 26, 
+                past_days = 4,
+                forecast_days = 14
             )
             # Concatenate historical and current/forecast weather data
-            weather_df = pd.concat(
-                [weather_archive_df, weather_current_and_forecast], axis=0, ignore_index=True)
+            weather_df = pd.concat([weather_archive_df, weather_current_and_forecast], axis=0, ignore_index=True)
             # Save data to SQLite table
             insert_data_weather_and_elec(
                 'HistoricalElectricityWeather',
@@ -299,19 +265,18 @@ def initialize_database():
                 sqliteConnection
             )
         else:
-            logging.info(
-                'Database isn\'t empty. New data will be added to the database.')
-            # get current and forecast weather data for the nex 14 days
+            logging.info('Database isn\'t empty. New data will be added to the database.')
+            #get current and forecast weather data for the nex 14 days
             weather_forecast_update = get_weather_data(
-                expire_after=3600,
-                retries=5,
-                backoff_factor=0.2,
-                timezone="auto",
-                url="https://api.open-meteo.com/v1/forecast",
-                latitude=64,
-                longitude=26,
-                past_days=0,
-                forecast_days=14
+                expire_after = 3600, 
+                retries =5, 
+                backoff_factor = 0.2,
+                timezone = "auto",
+                url = "https://api.open-meteo.com/v1/forecast", 
+                latitude = 64, 
+                longitude = 26, 
+                past_days = 0,
+                forecast_days = 14
             )
             # update database with new data
             insert_data_weather_and_elec(
@@ -321,16 +286,14 @@ def initialize_database():
                 weather_forecast_update,
                 cursor,
                 sqliteConnection
-            )
+            )        
         sqliteConnection.close()
     except sqlite3.Error as error:
         logging.error('Error occurred - ', error)
 
-
 def job():
     logging.info("Running scheduled job...")
     initialize_database()
-
 
 # Run the job immediately
 job()

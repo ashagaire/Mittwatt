@@ -33,6 +33,24 @@ async function dateIdsForDay(ctx: Context, year: number, month: number, day: num
 }
 
 
+// function to get the IDs for a given period
+async function dateIdsForPeriod(ctx: Context, startDate: Date, endDate: Date): Promise<number[]> {
+  const dateRecords: CalendarDate[] = await ctx.db.calendarDate.findMany({
+    select: {
+      id: true,
+    },
+    where: {
+      dateValue: {
+        gte: startDate,
+        lte: endDate,
+      }
+    }
+  });
+
+  return dateRecords.map((record: CalendarDate) => record.id);
+}
+
+
 export const priceRouter = createTRPCRouter({
     hello: publicProcedure
         .input(z.object({ text: z.string() }))
@@ -66,6 +84,30 @@ export const priceRouter = createTRPCRouter({
 
             return historicalData;
         }),
+
+    getHistoryPeriod: publicProcedure
+        .input(z.object({ startDate: z.date(), endDate: z.date() }))
+        .query(async ({ input, ctx }) => {
+          const dateIds = await dateIdsForPeriod(ctx, input.startDate, input.endDate);
+            const historicalData = await ctx.db.historicalElectricityWeather.findMany({
+                where: {
+                dateId: {
+                    in: dateIds,
+                }
+                },
+                select: {
+                dateId: true,
+                price: true,
+                dateData: {
+                    select: {
+                    dateValue: true,
+                    }
+                }
+                }
+            });
+
+            return historicalData;
+          }),
 
     // get forecast data for a given day
     getForecastDay: publicProcedure
