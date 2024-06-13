@@ -48,3 +48,6 @@ yarn-error.log*
 /prisma/database_population.log
 /prisma/downloaded_file.xlsx
 /prisma/.cache.sqlite
+
+#Virtual Environment
+/venv
