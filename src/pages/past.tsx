@@ -2,28 +2,30 @@
 //import Head from "next/head";
 //import Link from "next/link";
 
-import { useState, useEffect } from "react";
-
 import { api } from "~/utils/api";
 
 export default function Past() {
-  const [data, setData] = useState<any>(null);
-  const fetchData = async () => {
-    const { data } = await api.price.getHistoryPeriod.useQuery({
-      startDate: new Date(new Date().setDate(new Date().getDate() - 1)),
-      endDate: new Date(),
+  const { data, error, isLoading } =
+    api.price.getHistoryPeriodDailyAverage.useQuery({
+      startDate: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000),
+      endDate: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
     });
-    setData(data);
-  };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  console.log("Data:", data);
+  console.log("Error:", error);
+  console.log("IsLoading:", isLoading);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
 
   return (
-    <>
-      {data && <div>{data.length}</div>}
-      {!data && <div>Loading data...</div>}
-    </>
+    <div>
+      <div>{JSON.stringify(data)}</div>
+    </div>
   );
 }
