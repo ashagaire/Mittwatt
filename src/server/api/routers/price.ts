@@ -42,7 +42,7 @@ async function dateIdsForDay(ctx: Context, year: number, month: number, day: num
 }
 
 
-
+// function to get hourly prices for a specific day
 async function HistoryDayResults(ctx: Context, year: number, month: number, day: number) {
   const dateIds = await dateIdsForDay(ctx, year, month, day);
   const historicalData = await ctx.db.historicalElectricityWeather.findMany({
@@ -65,31 +65,6 @@ async function HistoryDayResults(ctx: Context, year: number, month: number, day:
 }
 
 
-// function to get the IDs for a given period
-/*async function dateIdsForPeriod(ctx: Context, startDate: string, endDate: string): Promise<number[]> {
-
-  // Construct the SQL query with placeholders for dates
-  const sql = Prisma.sql`
-    SELECT id
-    FROM CalendarDate
-    WHERE dateValue >= ${startDate} AND dateValue <= ${endDate};
-  `;
-
-
-   // Debugging: Log the SQL and parameters
-   console.log('SQL Query:', sql);
-   console.log('Start Date:', startDate);
-   console.log('End Date:', endDate);
-
-  // Execute the SQL query with escaped parameters, even if dates come from code
-  const result: { id: number }[] = await ctx.db.$queryRaw(sql, startDate, endDate);
-
-  // Assuming the result contains an array of objects with 'id' property
-  return result.map((record: any) => record.id);
-
-}*/
-
-
 export const priceRouter = createTRPCRouter({
     hello: publicProcedure
         .input(z.object({ text: z.string() }))
@@ -109,12 +84,13 @@ export const priceRouter = createTRPCRouter({
         }),
 
 
-    // get history data for a given period
+    // get average prices daily for a given period
     getHistoryPeriodDailyAverage: publicProcedure
         .input(z.object({ startDate: z.date(), endDate: z.date() }))
         .query(async ({ input, ctx }) => {
           let currentDate = new Date(input.startDate);
           const averagePrices = [];
+          // get the average price for each day in the given period
           while(currentDate <= new Date(input.endDate)) {
             const historicalData = await HistoryDayResults(ctx, currentDate.getFullYear(), currentDate.getMonth() + 1, currentDate.getDate());
             if(historicalData && historicalData.length > 0) {
@@ -123,12 +99,12 @@ export const priceRouter = createTRPCRouter({
               }, 0);
               averagePrice = averagePrice / historicalData.length;
               averagePrices.push({
-                date: currentDate.toISOString(),
+                date: currentDate.getDate()+ '.' + (currentDate.getMonth()+1) + '.' + currentDate.getFullYear(),
                 price: averagePrice
               });
             } else {
               averagePrices.push({
-                date: currentDate.toISOString(),
+                date: currentDate.getDate()+ '.' + (currentDate.getMonth()+1) + '.' + currentDate.getFullYear(),
                 price: null
               });
             }
@@ -137,39 +113,6 @@ export const priceRouter = createTRPCRouter({
           }
           return averagePrices;
         }),
-
-    // test fetching ids between two days
-    /*getHistoryPeriodIds: publicProcedure
-        .input(z.object({ startDate: z.string(), endDate: z.string() }))
-        .query(async ({ input, ctx }) => {
-          const dateIds = await dateIdsForPeriod(ctx, input.startDate, input.endDate);
-            return dateIds;
-        }),*/
-
-
-    /*getHistoryPeriod: publicProcedure
-        .input(z.object({ startDate: z.string(), endDate: z.string() }))
-        .query(async ({ input, ctx }) => {
-          const dateIds = await dateIdsForPeriod(ctx, input.startDate, input.endDate);
-            const historicalData = await ctx.db.historicalElectricityWeather.findMany({
-                where: {
-                dateId: {
-                    in: dateIds,
-                }
-                },
-                select: {
-                dateId: true,
-                price: true,
-                dateData: {
-                    select: {
-                    dateValue: true,
-                    }
-                }
-                }
-            });
-
-            return historicalData;
-          }),*/
 
 
 
