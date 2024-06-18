@@ -82,23 +82,23 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
   return (
     <>
       <div className="h-96 w-full">
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart
-            data={data}
-            margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
-          >
-            <Line type="monotone" dataKey="price" stroke="#8884d8" />
-            <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-            <XAxis
-              dataKey="dateData.dateValue"
-              tickFormatter={(value) => {
-                return value.getUTCHours() + ":00";
-              }}
-            />
-            <YAxis />
-            <Tooltip />
-          </LineChart>
-        </ResponsiveContainer>
+        <LineChart
+          width={800}
+          height={400}
+          data={data}
+          margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+        >
+          <Line type="monotone" dataKey="price" stroke="#8884d8" />
+          <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+          <XAxis
+            dataKey="dateData.dateValue"
+            tickFormatter={(value) => {
+              return value.getUTCHours();
+            }}
+          />
+          <YAxis />
+          <Tooltip />
+        </LineChart>
       </div>
 
       <div className="text-white">

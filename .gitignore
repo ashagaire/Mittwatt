@@ -49,6 +49,5 @@ yarn-error.log*
 /prisma/downloaded_file.xlsx
 /prisma/.cache.sqlite
 
-
-# Python virtual environment
+#Virtual Environment
 /venv

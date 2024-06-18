@@ -49,6 +49,8 @@ export default function Past() {
       <div className="h-96 w-full">
         <ResponsiveContainer width="100%" height={300}>
           <LineChart
+            width={800}
+            height={400}
             data={data}
             margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
           >
