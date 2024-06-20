@@ -3,6 +3,7 @@ import { useMemo, useEffect, useState } from "react";
 import Image from "next/image";
 
 import {
+  ResponsiveContainer,
   LineChart,
   Line,
   CartesianGrid,
@@ -39,23 +40,24 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
   // Debugging: Controlled logging
   useEffect(() => {
     if (data) {
+      console.log("data", data);
       setMinimumPrice(
         data.reduce((min, obj) => {
-          return Math.min(min, obj.price);
+          return Math.min(min, obj?.price ?? Number.MAX_SAFE_INTEGER);
         }, Number.MAX_SAFE_INTEGER),
       );
       console.log("min", minimumPrice);
 
       setMaximumPrice(
         data.reduce((max, obj) => {
-          return Math.max(max, obj.price);
+          return Math.max(max, obj?.price ?? Number.MIN_SAFE_INTEGER);
         }, Number.MIN_SAFE_INTEGER),
       );
       console.log("min", maximumPrice);
 
       setAveragePrice(
         data.reduce((sum, obj) => {
-          return sum + obj.price;
+          return sum + (obj?.price ?? 0);
         }, 0) / data.length,
       );
       console.log("average", averagePrice);
@@ -81,8 +83,8 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
     <>
       <div className="h-96 w-full">
         <LineChart
-          width={600}
-          height={300}
+          width={800}
+          height={400}
           data={data}
           margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
         >
@@ -91,7 +93,7 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
           <XAxis
             dataKey="dateData.dateValue"
             tickFormatter={(value) => {
-              return value.getHours() + ":00";
+              return value.getUTCHours();
             }}
           />
           <YAxis />
@@ -111,13 +113,13 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
           <tbody>
             <tr>
               <td className="border border-gray-500 px-4 py-2">
-                {minimumPrice.toFixed(2) + " €"}
+                {minimumPrice.toFixed(2) + " c/kWh"}
               </td>
               <td className="border border-gray-500 px-4 py-2">
-                {maximumPrice.toFixed(2) + " €"}
+                {maximumPrice.toFixed(2) + " c/kWh"}
               </td>
               <td className="border border-gray-500 px-4 py-2">
-                {averagePrice.toFixed(2) + " €"}
+                {averagePrice.toFixed(2) + " c/kWh"}
               </td>
             </tr>
           </tbody>
@@ -139,10 +141,12 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
               data.map((item: any, index: number) => (
                 <tr key={index}>
                   <td className="border border-gray-500 px-4 py-2">
-                    {item.dateData.dateValue.getHours() + ":00"}
+                    {item.dateData.dateValue.getUTCHours() + ":00"}
                   </td>
                   <td className="border border-gray-500 px-4 py-2">
-                    {item.price.toFixed(2) + " €"}
+                    {item.price?.toFixed(2)
+                      ? item.price?.toFixed(2) + " c/kWh"
+                      : "Not yet calculated"}
                   </td>
                 </tr>
               ))
