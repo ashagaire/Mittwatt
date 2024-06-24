@@ -6,8 +6,10 @@
 
 export default function Future() {
   return (
-    <>
-      <div>Future</div>
-    </>
+    <div className="container flex flex-col items-center justify-center gap-4 text-black">
+      <div className="w-full pb-6 pt-6 text-center text-4xl font-bold">
+        Future Prices
+      </div>
+    </div>
   );
 }
