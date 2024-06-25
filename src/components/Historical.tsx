@@ -81,44 +81,49 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
 
   return (
     <>
-      <div className="h-96 w-full">
-        <LineChart
-          width={800}
-          height={400}
-          data={data}
-          margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
-        >
-          <Line type="monotone" dataKey="price" stroke="#8884d8" />
-          <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-          <XAxis
-            dataKey="dateData.dateValue"
-            tickFormatter={(value) => {
-              return value.getUTCHours();
-            }}
-          />
-          <YAxis />
-          <Tooltip />
-        </LineChart>
+      <div className="flex w-full items-center justify-center pt-20 text-center text-2xl  text-black">
+        {data ? data[1]?.dateData.dateValue.toDateString() : "undefined"}
       </div>
 
-      <div className="text-white">
-        <table className="w-full table-auto border-collapse border border-gray-500">
+      <div className="h-96 w-full px-10">
+        <ResponsiveContainer>
+          <LineChart
+            data={data}
+            margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+            className="justify-center"
+          >
+            <Line type="monotone" dataKey="price" stroke="#16A34A" />
+            <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+            <XAxis
+              dataKey="dateData.dateValue"
+              tickFormatter={(value) => {
+                return value.getUTCHours();
+              }}
+            />
+            <YAxis />
+            <Tooltip />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="flex w-full items-center justify-center pl-32 pr-32 pt-10 text-black">
+        <table className="min-w-full table-auto border-collapse border border-gray-500 px-10">
           <thead>
-            <tr>
+            <tr className="bg-green-600 text-white">
               <th className="border border-gray-500 px-4 py-2">Lowest</th>
               <th className="border border-gray-500 px-4 py-2">Highest</th>
               <th className="border border-gray-500 px-4 py-2">Average</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td className="border border-gray-500 px-4 py-2">
+            <tr className="bg-green-50">
+              <td className="border border-gray-500 px-4 py-2 text-center">
                 {minimumPrice.toFixed(2) + " c/kWh"}
               </td>
-              <td className="border border-gray-500 px-4 py-2">
+              <td className="border border-gray-500 px-4 py-2 text-center">
                 {maximumPrice.toFixed(2) + " c/kWh"}
               </td>
-              <td className="border border-gray-500 px-4 py-2">
+              <td className="border border-gray-500 px-4 py-2 text-center">
                 {averagePrice.toFixed(2) + " c/kWh"}
               </td>
             </tr>
@@ -126,12 +131,10 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
         </table>
       </div>
 
-      <div className="text-white">
-        {data ? data[1]?.dateData.dateValue.toDateString() : "undefined"}
-
-        <table className="w-full table-auto border-collapse border border-gray-500">
+      <div className=" w-full items-center justify-center pl-32 pr-32 pt-10 text-black">
+        <table className="min-w-full table-auto border-collapse border border-gray-500 px-10">
           <thead>
-            <tr>
+            <tr className="bg-green-600 text-white">
               <th className="border border-gray-500 px-4 py-2">Hour</th>
               <th className="border border-gray-500 px-4 py-2">Price</th>
             </tr>
@@ -139,11 +142,11 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
           <tbody>
             {data && data.length > 0 ? (
               data.map((item: any, index: number) => (
-                <tr key={index}>
-                  <td className="border border-gray-500 px-4 py-2">
+                <tr key={index} className="bg-green-50">
+                  <td className="border border-gray-500 px-4 py-2 text-center">
                     {item.dateData.dateValue.getUTCHours() + ":00"}
                   </td>
-                  <td className="border border-gray-500 px-4 py-2">
+                  <td className="border border-gray-500 px-4 py-2 text-center">
                     {item.price?.toFixed(2)
                       ? item.price?.toFixed(2) + " c/kWh"
                       : "Not yet calculated"}
@@ -151,7 +154,7 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
                 </tr>
               ))
             ) : (
-              <tr>
+              <tr className="bg-green-50">
                 <td colSpan={3} className="border border-gray-500 px-4 py-2">
                   No data available
                 </td>
