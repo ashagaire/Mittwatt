@@ -92,7 +92,7 @@ model HistoricalElectricityWeather {
 model ForecastElectricityPrice {
   id             Int  @id @default(autoincrement())
   dateId         Int  @unique
-  price          Int
+  price          Float?
   createdDate    DateTime @default(now())
   modifiedDate   DateTime @default(now())
 
