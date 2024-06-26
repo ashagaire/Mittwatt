@@ -167,10 +167,6 @@ export const priceRouter = createTRPCRouter({
         }),
 
 
-    // get average prices daily for a given period
-
-
-
 
 
     
