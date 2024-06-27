@@ -8,13 +8,13 @@ import {
   Tooltip,
 } from "recharts";
 
-interface AveragePricesProps {
+interface DailyAveragePricesProps {
   startDate: Date;
   endDate: Date;
   data: any;
 }
 
-const AveragePrices: React.FC<AveragePricesProps> = ({
+const DailyAveragePrices: React.FC<DailyAveragePricesProps> = ({
   startDate,
   endDate,
   data,
@@ -44,7 +44,7 @@ const AveragePrices: React.FC<AveragePricesProps> = ({
                 return value;
               }}
             />
-            <YAxis />
+            <YAxis tickCount={10} />
             <Tooltip />
           </LineChart>
         </ResponsiveContainer>
@@ -83,4 +83,4 @@ const AveragePrices: React.FC<AveragePricesProps> = ({
   );
 };
 
-export default AveragePrices;
+export default DailyAveragePrices;

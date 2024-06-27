@@ -85,28 +85,7 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
         {data ? data[1]?.dateData.dateValue.toDateString() : "undefined"}
       </div>
 
-      <div className="h-96 w-full px-10">
-        <ResponsiveContainer>
-          <LineChart
-            data={data}
-            margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
-            className="justify-center"
-          >
-            <Line type="monotone" dataKey="price" stroke="#16A34A" />
-            <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-            <XAxis
-              dataKey="dateData.dateValue"
-              tickFormatter={(value) => {
-                return value.getUTCHours();
-              }}
-            />
-            <YAxis />
-            <Tooltip />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-
-      <div className="flex w-full items-center justify-center pl-32 pr-32 pt-10 text-black">
+      <div className="flex w-full items-center justify-center px-32 py-10 text-black">
         <table className="min-w-full table-auto border-collapse border border-gray-500 px-10">
           <thead>
             <tr className="bg-green-600 text-white">
@@ -129,6 +108,27 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <div className="h-96 w-full px-10">
+        <ResponsiveContainer>
+          <LineChart
+            data={data}
+            margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+            className="justify-center"
+          >
+            <Line type="monotone" dataKey="price" stroke="#16A34A" />
+            <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+            <XAxis
+              dataKey="dateData.dateValue"
+              tickFormatter={(value) => {
+                return value.getUTCHours();
+              }}
+            />
+            <YAxis tickCount={10} />
+            <Tooltip />
+          </LineChart>
+        </ResponsiveContainer>
       </div>
 
       <div className=" w-full items-center justify-center pl-32 pr-32 pt-10 text-black">

@@ -1,10 +1,6 @@
-//import { signIn, signOut, useSession } from "next-auth/react";
-//import Head from "next/head";
-//import Link from "next/link";
-
 import { useMemo } from "react";
 import { api } from "~/utils/api";
-import AveragePrices from "~/components/AveragePrices";
+import DailyAveragePrices from "~/components/DailyAveragePrices";
 
 export default function Future() {
   const startDate = useMemo(
@@ -41,7 +37,7 @@ export default function Future() {
         Future Prices
       </div>
 
-      <AveragePrices startDate={startDate} endDate={endDate} data={data} />
+      <DailyAveragePrices startDate={startDate} endDate={endDate} data={data} />
     </div>
   );
 }

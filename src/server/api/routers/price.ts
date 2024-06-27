@@ -25,6 +25,10 @@ type CalendarDate = {
   id: number;
 };
 
+interface AveragePriceResult {
+  averagePrice: number;
+}
+
 // function to get the IDs for a given day
 async function dateIdsForDay(ctx: Context, year: number, month: number, day: number): Promise<number[]> {
   const dateRecords: CalendarDate[] = await ctx.db.calendarDate.findMany({
@@ -166,25 +170,6 @@ export const priceRouter = createTRPCRouter({
           return averagePrices;
         }),
 
-    /*getAveragePrice: publicProcedure
-        .input(z.object({ startDate: z.date(), endDate: z.date() }))
-        .query(async ({ input, ctx }) => {
-          const averagePrices = await ctx.db.historicalElectricityWeather.findMany({
-            select: {
-              price: true,
-            },
-            where: {
-              dateData: {
-                dateValue: {
-                  gte: input.startDate.toISOString().slice(0, 10)+'T00:00:00.000Z',
-                  lte: input.endDate.toISOString().slice(0, 10)+'T00:00:00.000Z',
-                },
-              }
-            },
-          });
-          return {average: averagePrices, startDate: input.startDate.toISOString().slice(0, 10)+' 00:00:00', endDate: input.endDate.toISOString().slice(0, 10)+' 00:00:00'};
-        }),*/
-
 
     getHistoryPeriodTotalAverage: publicProcedure
         .input(z.object({ startDate: z.date(), endDate: z.date() }))
@@ -193,7 +178,7 @@ export const priceRouter = createTRPCRouter({
           const startDate = input.startDate.toISOString().slice(0, 19).replace('T', ' ');
           const endDate = input.endDate.toISOString().slice(0, 19).replace('T', ' ');
 
-          const averagePrice = await ctx.db.$queryRaw`
+          const averagePriceResult: AveragePriceResult[] = await ctx.db.$queryRaw`
             SELECT AVG(price) AS averagePrice
             FROM (
               SELECT main.HistoricalElectricityWeather.price 
@@ -203,13 +188,9 @@ export const priceRouter = createTRPCRouter({
               WHERE cd.dateValue >= ${startDate} AND cd.dateValue <= ${endDate}
             )`;
 
-          return {
-            data: {
-              average: averagePrice,
-              startDate: startDate,
-              endDate: endDate
-            }
-          };
+          const averagePrice = averagePriceResult[0]?.averagePrice || null;
+
+          return { averagePrice };
         }),
 
 

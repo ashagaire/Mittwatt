@@ -1,32 +1,7 @@
-//import { signIn, signOut, useSession } from "next-auth/react";
-//import Head from "next/head";
-//import Link from "next/link";
-
 import { useEffect, useMemo } from "react";
 import { api } from "~/utils/api";
 
 export default function Home() {
-  const hello = api.post.hello.useQuery({ text: "from tRPC" });
-
-  const startDate = useMemo(
-    () => new Date(Date.now() - 6 * 24 * 60 * 60 * 1000),
-    [],
-  );
-  const endDate = useMemo(
-    () => new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
-    [],
-  );
-  const data = api.price.getHistoryPeriodTotalAverage.useQuery({
-    startDate: startDate,
-    endDate: endDate,
-  });
-
-  useEffect(() => {
-    if (data) {
-      console.log(data.data);
-    }
-  }, [data]);
-
   return (
     <>
       <div className="container rounded-xl bg-green-100 p-20 text-left">
