@@ -1,13 +1,45 @@
-//import { signIn, signOut, useSession } from "next-auth/react";
-//import Head from "next/head";
-//import Link from "next/link";
-
-//import { api } from "~/utils/api";
+import { useEffect, useMemo, useState } from "react";
+import { api } from "~/utils/api";
+import DailyAveragePrices from "~/components/DailyAveragePrices";
+import PastAveragePrices from "~/components/PastAveragePrices";
 
 export default function Past() {
+  const startDate = useMemo(
+    () => new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
+    [],
+  );
+  const endDate = useMemo(
+    () => new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+    [],
+  );
+
+  const { data, error, isLoading } =
+    api.price.getHistoryPeriodDailyAverage.useQuery({
+      startDate: startDate,
+      endDate: endDate,
+    });
+
+  if (isLoading) {
+    return (
+      <>
+        <div className=" inline h-8 w-8 text-gray-200">
+          <span className="loader inline h-8 w-8 text-gray-200"></span>
+        </div>
+      </>
+    );
+  }
+
+  if (error) {
+    return <div>Error: {error ? error.message : "Unknown Error"}</div>;
+  }
+
   return (
-    <>
-      <div>Past</div>
-    </>
+    <div className="container flex flex-col items-center justify-center gap-4 text-black">
+      <div className="w-full pb-6 pt-6 text-center text-4xl font-bold">
+        Past Prices
+      </div>
+      <PastAveragePrices />
+      <DailyAveragePrices startDate={startDate} endDate={endDate} data={data} />
+    </div>
   );
 }
