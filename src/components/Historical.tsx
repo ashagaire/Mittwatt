@@ -7,9 +7,12 @@ import {
   LineChart,
   Line,
   CartesianGrid,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   Tooltip,
+  Label,
 } from "recharts";
 
 interface HistoricalProps {
@@ -110,11 +113,45 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
         </table>
       </div>
 
-      <div className="h-96 w-full px-10">
-        <ResponsiveContainer>
+      <div className="flex w-full items-center justify-center pt-20 text-center text-2xl  text-black">
+        Hourly Price Distribution
+      </div>
+
+      <div className="mb-10 h-full w-full">
+        <ResponsiveContainer height={500}>
+          <BarChart
+            data={data}
+            margin={{ top: 5, right: 20, bottom: 100, left: 10 }}
+            className="justify-center"
+          >
+            <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
+            <XAxis
+              dataKey="dateData.dateValue"
+              tickFormatter={(value) => {
+                return value.getUTCHours();
+              }}
+            >
+              <Label value="Hours" offset={5} position="bottom" />
+            </XAxis>
+            // Format x-axis labels
+            <YAxis tickCount={10}>
+              <Label value="Price" offset={5} position="left" angle={-90} />
+            </YAxis>
+            <Tooltip />
+            <Bar dataKey="price" fill="#16A34A" />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="flex w-full items-center justify-center pt-20 text-center text-2xl  text-black">
+        Hourly Price Distribution Over Time
+      </div>
+
+      <div className="h-full w-full">
+        <ResponsiveContainer height={500}>
           <LineChart
             data={data}
-            margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+            margin={{ top: 5, right: 20, bottom: 100, left: 10 }}
             className="justify-center"
           >
             <Line type="monotone" dataKey="price" stroke="#16A34A" />
@@ -124,8 +161,12 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
               tickFormatter={(value) => {
                 return value.getUTCHours();
               }}
-            />
-            <YAxis tickCount={10} />
+            >
+              <Label value="Hours" offset={5} position="bottom" />
+            </XAxis>
+            <YAxis tickCount={10}>
+              <Label value="Price" offset={5} position="left" angle={-90} />
+            </YAxis>
             <Tooltip />
           </LineChart>
         </ResponsiveContainer>
@@ -142,7 +183,10 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
           <tbody>
             {data && data.length > 0 ? (
               data.map((item: any, index: number) => (
-                <tr key={index} className="bg-green-50">
+                <tr
+                  key={index}
+                  className={` ${item.dateData.dateValue.getUTCHours() === new Date().getHours() && item.dateData.dateValue.getDate() === new Date().getDate() ? "bg-green-200 text-green-800" : "bg-green-50 text-black"}`}
+                >
                   <td className="border border-gray-500 px-4 py-2 text-center">
                     {item.dateData.dateValue.getUTCHours() + ":00"}
                   </td>
