@@ -138,7 +138,29 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
               <Label value="Price" offset={5} position="left" angle={-90} />
             </YAxis>
             <Tooltip />
-            <Bar dataKey="price" fill="#16A34A" />
+            <Bar
+              dataKey="price"
+              fill="#16A34A"
+              shape={(props: any) => {
+                const { x, y, width, height, payload } = props;
+                const barHour = new Date(
+                  payload.dateData.dateValue,
+                ).getUTCHours();
+                const barColor =
+                  barHour === new Date().getHours() ? "#166534" : "#16A34A";
+                const positiveHeight = Math.abs(height); // Use absolute height
+                const positiveY = height >= 0 ? y : y - positiveHeight; // Adjust y for negative values
+                return (
+                  <rect
+                    x={x}
+                    y={positiveY}
+                    width={width}
+                    height={positiveHeight}
+                    fill={barColor}
+                  />
+                );
+              }}
+            />
           </BarChart>
         </ResponsiveContainer>
       </div>
