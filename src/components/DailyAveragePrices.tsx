@@ -6,6 +6,7 @@ import {
   XAxis,
   YAxis,
   Tooltip,
+  Label,
 } from "recharts";
 
 interface DailyAveragePricesProps {
@@ -30,11 +31,11 @@ const DailyAveragePrices: React.FC<DailyAveragePricesProps> = ({
         to{" "}
         <span className="mx-2 text-green-800"> {endDate.toDateString()} </span>
       </div>
-      <div className="h-96 w-full px-10">
-        <ResponsiveContainer>
+      <div className="h-full w-full px-10">
+        <ResponsiveContainer height={500}>
           <LineChart
             data={data}
-            margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+            margin={{ top: 5, right: 20, bottom: 100, left: 10 }}
           >
             <Line type="monotone" dataKey="price" stroke="#16A34A" />
             <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
@@ -43,8 +44,12 @@ const DailyAveragePrices: React.FC<DailyAveragePricesProps> = ({
               tickFormatter={(value) => {
                 return value;
               }}
-            />
-            <YAxis tickCount={10} />
+            >
+              <Label value="Date" offset={5} position="bottom" />
+            </XAxis>
+            <YAxis tickCount={10}>
+              <Label value="Price" offset={5} position="left" angle={-90} />
+            </YAxis>
             <Tooltip />
           </LineChart>
         </ResponsiveContainer>
