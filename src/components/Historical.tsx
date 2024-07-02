@@ -146,8 +146,12 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
                 const barHour = new Date(
                   payload.dateData.dateValue,
                 ).getUTCHours();
+                const barDay = new Date(payload.dateData.dateValue).getDate();
                 const barColor =
-                  barHour === new Date().getHours() ? "#166534" : "#16A34A";
+                  barHour === new Date().getHours() &&
+                  barDay === new Date().getDate()
+                    ? "#166534"
+                    : "#16A34A";
                 const positiveHeight = Math.abs(height); // Use absolute height
                 const positiveY = height >= 0 ? y : y - positiveHeight; // Adjust y for negative values
                 return (
