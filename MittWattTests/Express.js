@@ -24,7 +24,6 @@ function formatDate(date) {
 // Get today's date
 const today = new Date();
 const todayFormatted = formatDate(today);
-console.log("todayFormatted", todayFormatted);
 
 // Get yesterday's date
 const yesterday = new Date(today);
@@ -73,7 +72,6 @@ app.get('/api/currentdata', (req, res) => {
   // Use a wildcard for the LIKE query
   const dateValueWithWildcard = `${todayFormatted}%`;
   
-  
   db.all(query, [dateValueWithWildcard], (err, rows) => {
     if (err) {
       res.status(500).json({ error: err.message });
@@ -90,12 +88,10 @@ app.get('/api/yesterdaydata', (req, res) => {
     res.status(400).json({ error: 'dateValue parameter is required' });
     return;
   }
-  
-  const query_1 = 'SELECT dateId, price, dateValue FROM HistoricalElectricityWeather, CalendarDate WHERE HistoricalElectricityWeather.dateId = CalendarDate.id AND dateValue LIKE ?';
+   const query_1 = 'SELECT dateId, price, dateValue FROM HistoricalElectricityWeather, CalendarDate WHERE HistoricalElectricityWeather.dateId = CalendarDate.id AND dateValue LIKE ?';
  
   // Use a wildcard for the LIKE query
   const dateValueWithWildcard = `${yesterdayFormatted}%`;
-  
   
   db.all(query_1, [dateValueWithWildcard], (err, rows) => {
     if (err) {
@@ -113,12 +109,11 @@ app.get('/api/tomorrowdata', (req, res) => {
     res.status(400).json({ error: 'dateValue parameter is required' });
     return;
   }
-  
+
   const query_2 = 'SELECT dateId, price, dateValue FROM HistoricalElectricityWeather, CalendarDate WHERE HistoricalElectricityWeather.dateId = CalendarDate.id AND dateValue LIKE ?';
  
   // Use a wildcard for the LIKE query
   const dateValueWithWildcard = `${tomorrowFormatted}%`;
-  
   
   db.all(query_2, [dateValueWithWildcard], (err, rows) => {
     if (err) {
