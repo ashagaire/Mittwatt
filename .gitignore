@@ -50,10 +50,12 @@ yarn-error.log*
 /prisma/.cache.sqlite
 
 #Virtual Environment
-/venv
+
 /mittwatt
 /algorithm/original_electricity_price_model.h5
 /algorithm/KerasSequentialModel.ipynb
 /algorithm/DataAnalysisOnInitialDataset.ipynb
 /algorithm/model.py
 /algorithm/prediction.py
+/algorithm/nohup.out
+/algorithm/dataset
