@@ -63,7 +63,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 ></div>
               </button>
               <div
-                className={`absolute right-0 top-16 min-h-screen w-5/6 transform bg-green-200 transition-transform ${isMenuOpen ? "translate-x-0" : "translate-x-full"}`}
+                className={`absolute right-0 top-16 min-h-screen w-5/6 transform bg-green-200 transition-transform ${isMenuOpen ? "translate-x-0" : "hidden translate-x-full"}`}
               >
                 <Link
                   href="/"
