@@ -213,10 +213,14 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
                   key={index}
                   className={` ${item.dateData.dateValue.getUTCHours() === new Date().getHours() && item.dateData.dateValue.getDate() === new Date().getDate() ? "bg-green-200 text-green-800" : "bg-green-50 text-black"}`}
                 >
-                  <td className="border border-gray-500 px-4 py-2 text-center">
+                  <td
+                    className={`border border-gray-500 px-4 py-2 text-center ${minimumPrice === item.price ? " text-green-600" : ""} ${maximumPrice === item.price ? " text-red-600" : ""}`}
+                  >
                     {item.dateData.dateValue.getUTCHours() + ":00"}
                   </td>
-                  <td className="border border-gray-500 px-4 py-2 text-center">
+                  <td
+                    className={`border border-gray-500 px-4 py-2 text-center ${minimumPrice === item.price ? " text-green-600" : ""} ${maximumPrice === item.price ? " text-red-600" : ""}`}
+                  >
                     {item.price?.toFixed(2)
                       ? item.price?.toFixed(2) + " c/kWh"
                       : "Not yet calculated"}

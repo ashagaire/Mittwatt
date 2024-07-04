@@ -9,6 +9,7 @@ import {
   Label,
 } from "recharts";
 import DailyAverageLineChart from "./DailyAverageLineChart";
+import { useMemo } from "react";
 
 interface DailyAveragePricesForTwoWeeksProps {
   startDate: Date;
@@ -19,6 +20,24 @@ interface DailyAveragePricesForTwoWeeksProps {
 const DailyAveragePricesForTwoWeeks: React.FC<
   DailyAveragePricesForTwoWeeksProps
 > = ({ startDate, endDate, data }) => {
+  const maxPrice: number = useMemo(() => {
+    return data?.reduce(
+      (maxValue: number, item: any) => Math.max(maxValue, item.price || 0),
+      0,
+    );
+  }, [data]);
+
+  console.log("Maximum ...", maxPrice);
+
+  const minPrice = useMemo(() => {
+    return data?.reduce(
+      (minValue: number, item: any) =>
+        Math.min(minValue, item.price || Infinity),
+      0,
+    );
+  }, [data]);
+
+  console.log("Minimum ...", minPrice);
   return (
     <>
       <div className="flex w-full items-center justify-center pt-20 text-center text-2xl  text-black">
@@ -49,7 +68,10 @@ const DailyAveragePricesForTwoWeeks: React.FC<
           <tbody>
             {data && data.length > 0 ? (
               data.map((item: any, index: number) => (
-                <tr key={index} className="bg-green-50">
+                <tr
+                  key={index}
+                  className={` ${item.price?.toFixed(2) === maxPrice.toFixed(2) ? "bg-green-50 text-red-600" : ""} ${item.price?.toFixed(2) === minPrice.toFixed(2) ? "bg-green-50 text-green-600" : ""} bg-green-50 text-black`}
+                >
                   <td className="border border-gray-500 px-4 py-2 text-center">
                     {item.date}
                   </td>

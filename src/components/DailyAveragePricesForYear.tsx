@@ -36,7 +36,7 @@ const DailyAveragePricesForYear: React.FC<DailyAveragePricesForYearProps> = ({
         startDate={startDate}
         endDate={endDate}
         data={data}
-        tickStep={30}
+        tickStep={15}
       />
     </>
   );
