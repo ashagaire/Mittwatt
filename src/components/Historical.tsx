@@ -137,7 +137,14 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
             <YAxis tickCount={10}>
               <Label value="Price" offset={5} position="left" angle={-90} />
             </YAxis>
-            <Tooltip />
+            <Tooltip
+              formatter={(value, name, props) => [
+                `Price: ${value !== null ? props.payload?.price?.toFixed(2) + " c/kWh" : "N/A"}`,
+              ]}
+              labelFormatter={(label) =>
+                `Hour: ${label.toISOString("fi-FI", { hour: "2-digit", minute: "2-digit" }).substring(11, 16)}`
+              }
+            />
             <Bar
               dataKey="price"
               fill="#16A34A"
@@ -193,7 +200,14 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
             <YAxis tickCount={10}>
               <Label value="Price" offset={5} position="left" angle={-90} />
             </YAxis>
-            <Tooltip />
+            <Tooltip
+              formatter={(value, name, props) => [
+                `Price: ${value !== null ? props.payload?.price?.toFixed(2) + " c/kWh" : "N/A"}`,
+              ]}
+              labelFormatter={(label) =>
+                `Hour: ${label.toISOString("fi-FI", { hour: "2-digit", minute: "2-digit" }).substring(11, 16)}`
+              }
+            />
           </LineChart>
         </ResponsiveContainer>
       </div>

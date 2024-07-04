@@ -54,7 +54,12 @@ const DailyAverageLineChart: React.FC<DailyAverageLineChartProps> = ({
             <YAxis tickCount={10}>
               <Label value="Price" offset={5} position="left" angle={-90} />
             </YAxis>
-            <Tooltip />
+            <Tooltip
+              formatter={(value, name, props) => [
+                `Price: ${value !== null ? props.payload?.price?.toFixed(2) + " c/kWh" : "N/A"}`,
+              ]}
+              labelFormatter={(label) => `Date: ${label}`}
+            />
           </LineChart>
         </ResponsiveContainer>
       </div>
