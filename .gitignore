@@ -45,9 +45,12 @@ yarn-error.log*
 /.idea/
 
 #database
-/prisma/database_population.log
-/prisma/downloaded_file.xlsx
+/prisma/scripts/__pycache__
+*.pyc
 /prisma/.cache.sqlite
+/prisma/script_v0.py
+/prisma/logs
+/prisma/source_data/downloaded_file.xlsx
 
 #Virtual Environment
 /venv
