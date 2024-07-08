@@ -121,7 +121,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </nav>
         </header>
 
-        <div className="flex flex-col items-center justify-center gap-12 px-4 py-16 ">
+        <div className="flex min-h-screen flex-col items-center justify-center gap-12 px-4 py-16 ">
           <h1 className="text-center text-5xl font-extrabold tracking-tight text-black sm:text-[5rem]">
             Welcome to <span className="text-green-500">Mitt</span>
             <span className="text-green-600">Watt</span> App
