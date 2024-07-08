@@ -56,6 +56,8 @@ async function main() {
     windSpeed10m: Math.floor(Math.random() * 15),
     shortwaveRadiation: Math.floor(Math.random() * 1000),
     weatherCodeId: 1, // Assuming you have a WeatherCodeDimension with ID 1
+    createdDate: new Date(),
+    modifiedDate: new Date(),
   }));
 
   const forecastElectricityPriceData: Omit<Prisma.ForecastElectricityPriceCreateManyInput, 'forecast_id'>[] = calendarDateRecords.map((record) => ({

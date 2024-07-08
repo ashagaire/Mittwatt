@@ -8,18 +8,36 @@ import {
   Tooltip,
   Label,
 } from "recharts";
+import DailyAverageLineChart from "./DailyAverageLineChart";
+import { useMemo } from "react";
 
-interface DailyAveragePricesProps {
+interface DailyAveragePricesForTwoWeeksProps {
   startDate: Date;
   endDate: Date;
   data: any;
 }
 
-const DailyAveragePrices: React.FC<DailyAveragePricesProps> = ({
-  startDate,
-  endDate,
-  data,
-}) => {
+const DailyAveragePricesForTwoWeeks: React.FC<
+  DailyAveragePricesForTwoWeeksProps
+> = ({ startDate, endDate, data }) => {
+  const maxPrice: number = useMemo(() => {
+    return data?.reduce(
+      (maxValue: number, item: any) => Math.max(maxValue, item.price || 0),
+      0,
+    );
+  }, [data]);
+
+  console.log("Maximum ...", maxPrice);
+
+  const minPrice = useMemo(() => {
+    return data?.reduce(
+      (minValue: number, item: any) =>
+        Math.min(minValue, item.price || Infinity),
+      0,
+    );
+  }, [data]);
+
+  console.log("Minimum ...", minPrice);
   return (
     <>
       <div className="flex w-full items-center justify-center pt-20 text-center text-2xl  text-black">
@@ -31,29 +49,12 @@ const DailyAveragePrices: React.FC<DailyAveragePricesProps> = ({
         to{" "}
         <span className="mx-2 text-green-800"> {endDate.toDateString()} </span>
       </div>
-      <div className="h-full w-full px-10">
-        <ResponsiveContainer height={500}>
-          <LineChart
-            data={data}
-            margin={{ top: 5, right: 20, bottom: 100, left: 10 }}
-          >
-            <Line type="monotone" dataKey="price" stroke="#16A34A" />
-            <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-            <XAxis
-              dataKey="date"
-              tickFormatter={(value) => {
-                return value;
-              }}
-            >
-              <Label value="Date" offset={5} position="bottom" />
-            </XAxis>
-            <YAxis tickCount={10}>
-              <Label value="Price" offset={5} position="left" angle={-90} />
-            </YAxis>
-            <Tooltip />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+      <DailyAverageLineChart
+        startDate={startDate}
+        endDate={endDate}
+        data={data}
+        tickStep={1}
+      />
       <div className="flex w-full items-center justify-center pl-32 pr-32 pt-10 text-black">
         <table className="min-w-full table-auto border-collapse border border-gray-500 px-10">
           <thead>
@@ -67,7 +68,10 @@ const DailyAveragePrices: React.FC<DailyAveragePricesProps> = ({
           <tbody>
             {data && data.length > 0 ? (
               data.map((item: any, index: number) => (
-                <tr key={index} className="bg-green-50">
+                <tr
+                  key={index}
+                  className={` ${item.price?.toFixed(2) === maxPrice.toFixed(2) ? "bg-green-50 text-red-600" : ""} ${item.price?.toFixed(2) === minPrice.toFixed(2) ? "bg-green-50 text-green-600" : ""} bg-green-50 text-black`}
+                >
                   <td className="border border-gray-500 px-4 py-2 text-center">
                     {item.date}
                   </td>
@@ -88,4 +92,4 @@ const DailyAveragePrices: React.FC<DailyAveragePricesProps> = ({
   );
 };
 
-export default DailyAveragePrices;
+export default DailyAveragePricesForTwoWeeks;
