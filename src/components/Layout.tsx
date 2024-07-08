@@ -26,7 +26,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           content="width=device-width, initial-scale=1.0"
         ></meta>
       </Head>
-      <main>
+      <main className="flex h-full min-h-screen flex-col">
         <header>
           <nav className="sticky top-0 flex bg-gradient-to-r from-green-800 to-green-600">
             <div className="flex items-center gap-2 p-2">
@@ -129,6 +129,35 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
           {children}
         </div>
+        <footer className="t3-footer t3-footer--light bottom-0 mt-20 w-full bg-gradient-to-r from-green-800 to-green-600 py-4 text-white">
+          <div className="container mx-auto px-4">
+            <div className="flex flex-wrap items-center justify-between">
+              <p className="flex text-xs">
+                <span>
+                  <Image
+                    src={"/images/logo.png"}
+                    width={25}
+                    height={25}
+                    alt="Mittwatt"
+                  />
+                </span>
+                <span className="p-1">© 2024 All rights reserved.</span>
+              </p>
+              <ul className="list-unstyled flex space-x-4">
+                <li>
+                  <a href="#" className="text-white hover:text-green-100">
+                    Terms
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-white hover:text-green-100">
+                    Privacy
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </footer>
       </main>
     </>
   );
