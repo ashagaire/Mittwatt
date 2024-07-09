@@ -1,7 +1,6 @@
 import Head from "next/head";
 import Link from "next/link";
 import React, { useState } from "react";
-import { api } from "~/utils/api";
 import Image from "next/image";
 
 interface LayoutProps {
@@ -11,6 +10,7 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  // function to toggle the menu open and closed for small screens
   const handleClick = () => {
     setIsMenuOpen(!isMenuOpen);
   };

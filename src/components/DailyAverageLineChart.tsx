@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import {
   ResponsiveContainer,
   LineChart,
@@ -11,15 +11,11 @@ import {
 } from "recharts";
 
 interface DailyAverageLineChartProps {
-  startDate: Date;
-  endDate: Date;
   data: any;
   formatterType: string | null;
 }
 
 const DailyAverageLineChart: React.FC<DailyAverageLineChartProps> = ({
-  startDate,
-  endDate,
   data,
   formatterType,
 }) => {

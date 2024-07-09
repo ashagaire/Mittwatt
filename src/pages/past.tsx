@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { api } from "~/utils/api";
 import DailyAveragePricesForTwoWeeks from "~/components/DailyAveragePricesForTwoWeeks";
 import DailyAveragePricesForYear from "~/components/DailyAveragePricesForYear";

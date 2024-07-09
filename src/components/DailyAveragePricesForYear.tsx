@@ -22,12 +22,7 @@ const DailyAveragePricesForYear: React.FC<DailyAveragePricesForYearProps> = ({
         to
         <span className="mx-2 text-green-800"> {endDate.toDateString()} </span>
       </div>
-      <DailyAverageLineChart
-        startDate={startDate}
-        endDate={endDate}
-        data={data}
-        formatterType={"year"}
-      />
+      <DailyAverageLineChart data={data} formatterType={"year"} />
     </>
   );
 };
