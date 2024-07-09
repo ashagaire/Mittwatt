@@ -53,7 +53,7 @@ const DailyAveragePricesForTwoWeeks: React.FC<
         startDate={startDate}
         endDate={endDate}
         data={data}
-        tickStep={1}
+        formatterType={"day"}
       />
       <div className="flex w-full items-center justify-center pl-32 pr-32 pt-10 text-black">
         <table className="min-w-full table-auto border-collapse border border-gray-500 px-10">
