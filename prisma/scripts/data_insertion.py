@@ -3,16 +3,19 @@ import logging
 from datetime import datetime
 
 
-def insert_data_dim_table(conn, cursor, table_name, table_columns, data):
+def insert_data_dim_table(conn, cursor, table_name, table_columns, insertable_data):
     """
     Inserts data from a DataFrame or .csv into SQLite table
     """
-    if isinstance(data, str):
-        data = pd.read_csv(data, sep=';', header=None)
+    if isinstance(insertable_data, str):
+        insertable_data = pd.read_csv(insertable_data, sep=';', header=None)
+    now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    insertable_data['created'] = now
+    insertable_data['modified'] = now
     placeholders = ", ".join(["?" for _ in range(len(table_columns.split(",")))])
     query = f'INSERT INTO {table_name} ({table_columns}) VALUES ({placeholders});'
     try:
-        cursor.executemany(query, data.values.tolist())   
+        cursor.executemany(query, insertable_data.values.tolist())   
         conn.commit()
         logging.info(f'Table {table_name} has been populated')
     except Exception as e:

@@ -71,7 +71,11 @@ pip install -r requirements.txt
 Run the following command:
 
 ```
-pythonw script.py
+# Windows
+pythonw main.py
+
+# Linux
+python& main.py
 ```
 
 # Stop Python script

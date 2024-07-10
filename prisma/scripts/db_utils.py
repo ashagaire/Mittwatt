@@ -9,7 +9,7 @@ def connect_to_db(db_name):
         return conn, cur
     except sqlite3.Error as error:
         logging.error(f'Error occured - {error}')
-        return None
+        return None, None
 
 def is_database_empty(cur, table_list):
     try:

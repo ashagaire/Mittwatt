@@ -1,12 +1,10 @@
-
 import schedule
 import time
 import logging
-from scripts.initialize_db import initilize_database
+from scripts.populate_initial_data import populate_initial_data
 from scripts.update_db import update_database
 
-
-#setup logging
+# setup logging
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -17,15 +15,18 @@ logging.basicConfig(
 )
 
 # first start
+
+
 def job():
     logging.info("First start...")
-    initilize_database()
+    populate_initial_data()
 
 
 # running scheduled job
 def scheduled_job():
     logging.info("Running scheduled job...")
     update_database()
+
 
 # run job immediately
 job()
@@ -40,4 +41,3 @@ schedule.every().friday.at("15:00").do(scheduled_job)
 while True:
     schedule.run_pending()
     time.sleep(1)
-
