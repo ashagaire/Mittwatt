@@ -1,13 +1,3 @@
-import {
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Label,
-} from "recharts";
 import DailyAverageLineChart from "./DailyAverageLineChart";
 import { useMemo } from "react";
 
@@ -27,8 +17,6 @@ const DailyAveragePricesForTwoWeeks: React.FC<
     );
   }, [data]);
 
-  console.log("Maximum ...", maxPrice);
-
   const minPrice = useMemo(() => {
     return data?.reduce(
       (minValue: number, item: any) =>
@@ -37,7 +25,6 @@ const DailyAveragePricesForTwoWeeks: React.FC<
     );
   }, [data]);
 
-  console.log("Minimum ...", minPrice);
   return (
     <>
       <div className="flex w-full items-center justify-center pt-20 text-center text-2xl  text-black">
@@ -49,12 +36,7 @@ const DailyAveragePricesForTwoWeeks: React.FC<
         to{" "}
         <span className="mx-2 text-green-800"> {endDate.toDateString()} </span>
       </div>
-      <DailyAverageLineChart
-        startDate={startDate}
-        endDate={endDate}
-        data={data}
-        tickStep={1}
-      />
+      <DailyAverageLineChart data={data} formatterType={"day"} />
       <div className="flex w-full items-center justify-center pl-32 pr-32 pt-10 text-black">
         <table className="min-w-full table-auto border-collapse border border-gray-500 px-10">
           <thead>

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import {
   ResponsiveContainer,
   LineChart,
@@ -11,25 +11,25 @@ import {
 } from "recharts";
 
 interface DailyAverageLineChartProps {
-  startDate: Date;
-  endDate: Date;
   data: any;
-  tickStep: number;
+  formatterType: string | null;
 }
 
 const DailyAverageLineChart: React.FC<DailyAverageLineChartProps> = ({
-  startDate,
-  endDate,
   data,
-  tickStep,
+  formatterType,
 }) => {
   const tickFormatter = (value: string, index: number) => {
     const [day, month, year] = value.split(".");
 
-    if (index % tickStep === 0) {
+    return `${day}.${month}.${year}`;
+  };
+
+  const tickFormatterYear = (value: string, index: number) => {
+    const [day, month, year] = value.split(".");
+    if (day === "1") {
       return `${day}.${month}.${year}`;
     }
-
     return "";
   };
 
@@ -45,14 +45,22 @@ const DailyAverageLineChart: React.FC<DailyAverageLineChartProps> = ({
             <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
             <XAxis
               dataKey="date"
-              tickFormatter={tickFormatter}
+              tickFormatter={
+                formatterType == "year" ? tickFormatterYear : tickFormatter
+              }
               angle={-90}
               textAnchor="end"
+              interval={0}
             >
               <Label value="Date" offset={60} position="bottom" />
             </XAxis>
             <YAxis tickCount={10}>
-              <Label value="Price" offset={5} position="left" angle={-90} />
+              <Label
+                value="Price c/kWh"
+                offset={5}
+                position="left"
+                angle={-90}
+              />
             </YAxis>
             <Tooltip
               formatter={(value, name, props) => [

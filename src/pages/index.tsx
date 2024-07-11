@@ -1,5 +1,3 @@
-import { useEffect, useMemo } from "react";
-import { api } from "~/utils/api";
 import Link from "next/link";
 
 export default function Home() {

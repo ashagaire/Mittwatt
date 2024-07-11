@@ -1,6 +1,5 @@
 import { api } from "~/utils/api";
 import { useMemo, useEffect, useState } from "react";
-import Image from "next/image";
 
 import {
   ResponsiveContainer,
@@ -40,30 +39,29 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
     date: currentDate,
   });
 
-  // Debugging: Controlled logging
   useEffect(() => {
     if (data) {
-      console.log("data", data);
+      //console.log("data", data);
       setMinimumPrice(
         data.reduce((min, obj) => {
           return Math.min(min, obj?.price ?? Number.MAX_SAFE_INTEGER);
         }, Number.MAX_SAFE_INTEGER),
       );
-      console.log("min", minimumPrice);
+      //console.log("min", minimumPrice);
 
       setMaximumPrice(
         data.reduce((max, obj) => {
           return Math.max(max, obj?.price ?? Number.MIN_SAFE_INTEGER);
         }, Number.MIN_SAFE_INTEGER),
       );
-      console.log("min", maximumPrice);
+      //console.log("min", maximumPrice);
 
       setAveragePrice(
         data.reduce((sum, obj) => {
           return sum + (obj?.price ?? 0);
         }, 0) / data.length,
       );
-      console.log("average", averagePrice);
+      //console.log("average", averagePrice);
     }
     //console.log("current", data);
   }, [data]);
