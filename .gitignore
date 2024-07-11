@@ -45,12 +45,15 @@ yarn-error.log*
 /.idea/
 
 #database
-/prisma/database_population.log
-/prisma/downloaded_file.xlsx
+/prisma/scripts/__pycache__
+*.pyc
 /prisma/.cache.sqlite
+/prisma/script_v0.py
+/prisma/logs
+/prisma/source_data/electricity_archive.xlsx
 
 #Virtual Environment
-
+/venv
 /mittwatt
 /algorithm/original_electricity_price_model.h5
 /algorithm/KerasSequentialModel.ipynb

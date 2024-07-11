@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { api } from "~/utils/api";
-import DailyAveragePrices from "~/components/DailyAveragePrices";
+import DailyAveragePricesForTwoWeeks from "~/components/DailyAveragePricesForTwoWeeks";
 
 export default function Future() {
   const startDate = useMemo(
@@ -37,7 +37,11 @@ export default function Future() {
         Future Prices
       </div>
 
-      <DailyAveragePrices startDate={startDate} endDate={endDate} data={data} />
+      <DailyAveragePricesForTwoWeeks
+        startDate={startDate}
+        endDate={endDate}
+        data={data}
+      />
     </div>
   );
 }

@@ -1,15 +1,31 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { api } from "~/utils/api";
-import DailyAveragePrices from "~/components/DailyAveragePrices";
+import DailyAveragePricesForTwoWeeks from "~/components/DailyAveragePricesForTwoWeeks";
+import DailyAveragePricesForYear from "~/components/DailyAveragePricesForYear";
 import PastAveragePrices from "~/components/PastAveragePrices";
 
 export default function Past() {
+  // The date two weeks ago
   const startDate = useMemo(
     () => new Date(Date.now() - 15 * 24 * 60 * 60 * 1000),
     [],
   );
+
+  // The date two days ago
   const endDate = useMemo(
     () => new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+    [],
+  );
+
+  // The first day of the same current month but for last year
+  const startYearDate = useMemo(() => {
+    const prevYear = new Date().getFullYear() - 1;
+    return new Date(prevYear, new Date().getMonth(), 1);
+  }, []);
+
+  // The last day of the previous month
+  const endYearDate = useMemo(
+    () => new Date(new Date().getFullYear(), new Date().getMonth(), 0),
     [],
   );
 
@@ -18,6 +34,15 @@ export default function Past() {
       startDate: startDate,
       endDate: endDate,
     });
+
+  const {
+    data: yearData,
+    error: yearError,
+    isLoading: yearUsLoading,
+  } = api.price.getHistoryPeriodDailyAverage.useQuery({
+    startDate: startYearDate,
+    endDate: endYearDate,
+  });
 
   if (isLoading) {
     return (
@@ -39,7 +64,16 @@ export default function Past() {
         Past Prices
       </div>
       <PastAveragePrices />
-      <DailyAveragePrices startDate={startDate} endDate={endDate} data={data} />
+      <DailyAveragePricesForTwoWeeks
+        startDate={startDate}
+        endDate={endDate}
+        data={data}
+      />
+      <DailyAveragePricesForYear
+        startDate={startYearDate}
+        endDate={endYearDate}
+        data={yearData}
+      />
     </div>
   );
 }

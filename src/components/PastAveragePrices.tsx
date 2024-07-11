@@ -55,15 +55,15 @@ const PastAveragePrices = () => {
   useEffect(() => {
     if (weekAverageData) {
       setWeekAveragePrice(weekAverageData.averagePrice);
-      console.log(weekAverageData.averagePrice);
+      //console.log(weekAverageData.averagePrice);
     }
     if (monthAverageData) {
       setMonthAveragePrice(monthAverageData.averagePrice);
-      console.log(monthAverageData);
+      //console.log(monthAverageData);
     }
     if (yearAverageData) {
       setYearAveragePrice(yearAverageData.averagePrice);
-      console.log(yearAverageData);
+      //console.log(yearAverageData);
     }
   }, [weekAverageData, monthAverageData, yearAverageData]);
 

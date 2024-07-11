@@ -1,6 +1,5 @@
 import { api } from "~/utils/api";
 import { useMemo, useEffect, useState } from "react";
-import Image from "next/image";
 
 import {
   ResponsiveContainer,
@@ -40,30 +39,29 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
     date: currentDate,
   });
 
-  // Debugging: Controlled logging
   useEffect(() => {
     if (data) {
-      console.log("data", data);
+      //console.log("data", data);
       setMinimumPrice(
         data.reduce((min, obj) => {
           return Math.min(min, obj?.price ?? Number.MAX_SAFE_INTEGER);
         }, Number.MAX_SAFE_INTEGER),
       );
-      console.log("min", minimumPrice);
+      //console.log("min", minimumPrice);
 
       setMaximumPrice(
         data.reduce((max, obj) => {
           return Math.max(max, obj?.price ?? Number.MIN_SAFE_INTEGER);
         }, Number.MIN_SAFE_INTEGER),
       );
-      console.log("min", maximumPrice);
+      //console.log("min", maximumPrice);
 
       setAveragePrice(
         data.reduce((sum, obj) => {
           return sum + (obj?.price ?? 0);
         }, 0) / data.length,
       );
-      console.log("average", averagePrice);
+      //console.log("average", averagePrice);
     }
     //console.log("current", data);
   }, [data]);
@@ -137,7 +135,14 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
             <YAxis tickCount={10}>
               <Label value="Price" offset={5} position="left" angle={-90} />
             </YAxis>
-            <Tooltip />
+            <Tooltip
+              formatter={(value, name, props) => [
+                `Price: ${value !== null ? props.payload?.price?.toFixed(2) + " c/kWh" : "N/A"}`,
+              ]}
+              labelFormatter={(label) =>
+                `Hour: ${label.toISOString("fi-FI", { hour: "2-digit", minute: "2-digit" }).substring(11, 16)}`
+              }
+            />
             <Bar
               dataKey="price"
               fill="#16A34A"
@@ -193,7 +198,14 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
             <YAxis tickCount={10}>
               <Label value="Price" offset={5} position="left" angle={-90} />
             </YAxis>
-            <Tooltip />
+            <Tooltip
+              formatter={(value, name, props) => [
+                `Price: ${value !== null ? props.payload?.price?.toFixed(2) + " c/kWh" : "N/A"}`,
+              ]}
+              labelFormatter={(label) =>
+                `Hour: ${label.toISOString("fi-FI", { hour: "2-digit", minute: "2-digit" }).substring(11, 16)}`
+              }
+            />
           </LineChart>
         </ResponsiveContainer>
       </div>
@@ -213,10 +225,14 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
                   key={index}
                   className={` ${item.dateData.dateValue.getUTCHours() === new Date().getHours() && item.dateData.dateValue.getDate() === new Date().getDate() ? "bg-green-200 text-green-800" : "bg-green-50 text-black"}`}
                 >
-                  <td className="border border-gray-500 px-4 py-2 text-center">
+                  <td
+                    className={`border border-gray-500 px-4 py-2 text-center ${minimumPrice === item.price ? " text-green-600" : ""} ${maximumPrice === item.price ? " text-red-600" : ""}`}
+                  >
                     {item.dateData.dateValue.getUTCHours() + ":00"}
                   </td>
-                  <td className="border border-gray-500 px-4 py-2 text-center">
+                  <td
+                    className={`border border-gray-500 px-4 py-2 text-center ${minimumPrice === item.price ? " text-green-600" : ""} ${maximumPrice === item.price ? " text-red-600" : ""}`}
+                  >
                     {item.price?.toFixed(2)
                       ? item.price?.toFixed(2) + " c/kWh"
                       : "Not yet calculated"}

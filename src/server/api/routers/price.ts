@@ -1,11 +1,9 @@
-import { date, z } from "zod";
-import { PrismaClient, Prisma } from "@prisma/client";
+import { z } from "zod";
+import { PrismaClient } from "@prisma/client";
 import {
   createTRPCRouter,
-  protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
-import { get } from "http";
 
 
 
@@ -129,14 +127,7 @@ async function getDailyAverage(ctx: Context, startDate: Date, endDate: Date, typ
 }
 
 
-export const priceRouter = createTRPCRouter({
-    hello: publicProcedure
-        .input(z.object({ text: z.string() }))
-        .query(({ input }) => {
-            return {
-                greeting: `Hello ${input.text}`,
-            };
-        }),    
+export const priceRouter = createTRPCRouter({    
 
     // get history data for a given day
     getHistoryDay: publicProcedure

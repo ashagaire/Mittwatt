@@ -1,5 +1,4 @@
-import { useEffect, useMemo } from "react";
-import { api } from "~/utils/api";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -17,15 +16,38 @@ export default function Home() {
         <p className="pb-4 text-3xl font-bold">What does it contain?</p>
         <ul className="list-disc pb-6 text-2xl">
           <li>
-            <span className="font-bold">Current: </span>
+            <span className="font-bold">
+              <Link
+                href="/current"
+                className="text-green-800 hover:text-green-600"
+              >
+                {" "}
+                Current:
+              </Link>{" "}
+            </span>
             The current price of electricity in the Finnish market.
           </li>
           <li>
-            <span className="font-bold">Past: </span>
+            <span className="font-bold">
+              <Link
+                href="/past"
+                className="text-green-800 hover:text-green-600"
+              >
+                {" "}
+                Past:
+              </Link>{" "}
+            </span>
             Statistics on the past 14 days of electricity prices.
           </li>
           <li>
-            <span className="font-bold">Future: </span>
+            <span className="font-bold">
+              <Link
+                href="/future"
+                className="text-green-800 hover:text-green-600"
+              >
+                Future:
+              </Link>{" "}
+            </span>
             Predictions on the next 14 days of electricity prices.
           </li>
         </ul>
