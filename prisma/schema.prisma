@@ -93,8 +93,8 @@ model ForecastElectricityPrice {
   id             Int  @id @default(autoincrement())
   dateId         Int  @unique
   price          Float?
-  createdDate    DateTime @default(now())
-  modifiedDate   DateTime @default(now())
+  createdDate    DateTime
+  modifiedDate   DateTime
 
   dateData       CalendarDate @relation(fields: [dateId], references: [id])
 }
