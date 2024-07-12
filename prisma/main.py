@@ -14,11 +14,11 @@ logging.basicConfig(
     ]
 )
 
+
 # first start
-
-
 def job():
     logging.info("First start...")
+
     populate_initial_data()
 
 
@@ -30,6 +30,7 @@ def scheduled_job():
 
 # run job immediately
 job()
+
 
 # Schedule the job every weekday at 15:00 (3 PM)
 schedule.every().monday.at("15:00").do(scheduled_job)

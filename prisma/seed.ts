@@ -63,6 +63,8 @@ async function main() {
   const forecastElectricityPriceData: Omit<Prisma.ForecastElectricityPriceCreateManyInput, 'forecast_id'>[] = calendarDateRecords.map((record) => ({
     dateId: record.id,
     price: Math.random() * 100,
+    createdDate: new Date(),
+    modifiedDate: new Date(),
   }));
 
   await db.historicalElectricityWeather.createMany({

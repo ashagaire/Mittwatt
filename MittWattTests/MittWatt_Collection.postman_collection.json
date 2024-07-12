@@ -3739,6 +3739,134 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "FuturetValuesFromDatabase",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.sendRequest('http://localhost:4000/api/futuredata?dayAfterTomorrowFormatted=${futureStartDate}&endDateFormatted=${futureEndDate}', function (err, response) {\r",
+							"    if (err) {\r",
+							"        console.error('Error fetching data from database:', err);\r",
+							"        return;\r",
+							"    }\r",
+							"\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"// Sample response JSON (replace this with pm.response.json() in actual use)\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"// Object to store prices grouped by date\r",
+							"var datePrices = {};\r",
+							"\r",
+							"// Iterate through each entry in the JSON response\r",
+							"jsonData.forEach(function(entry) {\r",
+							"    // Extract date (without time) from dateValue\r",
+							"    var date = entry.dateValue.split(' ')[0];\r",
+							"\r",
+							"    // If the date is not yet a key in datePrices, add it with an empty array\r",
+							"    if (!datePrices[date]) {\r",
+							"        datePrices[date] = [];\r",
+							"    }\r",
+							"\r",
+							"    // Add the price to the corresponding date's array\r",
+							"    datePrices[date].push(entry.price);\r",
+							"});\r",
+							"\r",
+							"// Object to store the average prices\r",
+							"var avgPrices = {};\r",
+							"\r",
+							"// Calculate the average price for each date\r",
+							"for (var date in datePrices) {\r",
+							"    var prices = datePrices[date];\r",
+							"    var total = prices.reduce((sum, price) => sum + price, 0);\r",
+							"    var avg = total / prices.length;\r",
+							"    avgPrices[date] = avg;\r",
+							"}\r",
+							"\r",
+							"// Log the average prices\r",
+							"console.log(avgPrices);\r",
+							"\r",
+							"// Combine all average prices and dates into a single object\r",
+							"var avgPricesData = {\r",
+							"    averagePrices: avgPrices,\r",
+							"    dates: Object.keys(avgPrices)\r",
+							"};\r",
+							"\r",
+							"// Set the combined data as a single environment variable\r",
+							"pm.environment.set('avgFuturePricesData', JSON.stringify(avgPricesData));\r",
+							"\r",
+							"// Log the environment variable for verification\r",
+							"console.log(pm.environment.get('avgFuturePricesData'));\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:4000/api/futuredata",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"api",
+						"futuredata"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "FuturePrice",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/trpc/price.getForecastPeriodDailyAverage?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22startDate%22%3A%22{{futureStartDate}}}T15%3A37%3A19.165Z%22%2C%22endDate%22%3A%2220{{futureEndDate}}}T15%3A37%3A19.165Z%22%7D%2C%22meta%22%3A%7B%22values%22%3A%7B%22startDate%22%3A%5B%22Date%22%5D%2C%22endDate%22%3A%5B%22Date%22%5D%7D%7D%7D%7D",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"trpc",
+						"price.getForecastPeriodDailyAverage"
+					],
+					"query": [
+						{
+							"key": "batch",
+							"value": "1"
+						},
+						{
+							"key": "input",
+							"value": "%7B%220%22%3A%7B%22json%22%3A%7B%22startDate%22%3A%22{{futureStartDate}}}T15%3A37%3A19.165Z%22%2C%22endDate%22%3A%2220{{futureEndDate}}}T15%3A37%3A19.165Z%22%7D%2C%22meta%22%3A%7B%22values%22%3A%7B%22startDate%22%3A%5B%22Date%22%5D%2C%22endDate%22%3A%5B%22Date%22%5D%7D%7D%7D%7D"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }

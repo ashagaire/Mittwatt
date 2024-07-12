@@ -4,6 +4,7 @@ const app = express();
 const port = 4000;
 
 
+
 // Connect to SQLite database
 const db = new sqlite3.Database('D:/electricity-shoc/prisma/db.sqlite', (err) => {
   if (err) {
@@ -74,6 +75,19 @@ app.get('/api/currentdata', (req, res) => {
   const dateValueWithWildcard = `${todayFormatted}%`;
   
   db.all(query, [dateValueWithWildcard], (err, rows) => {
+  const dateValue = req.query.dateValue;
+  if (!dateValue) {
+    res.status(400).json({ error: 'dateValue parameter is required' });
+    return;
+  }
+  
+  const query = 'SELECT dateId, price, dateValue FROM HistoricalElectricityWeather, CalendarDate WHERE HistoricalElectricityWeather.dateId = CalendarDate.id AND dateValue LIKE ?';
+  console.log("query:", query);
+  
+  // Use a wildcard for the LIKE query
+  const dateValueWithWildcard = `${todayFormatted}%`;
+  
+  db.all(query, [dateValueWithWildcard], (err, rows) => {
     if (err) {
       res.status(500).json({ error: err.message });
       return;
@@ -83,7 +97,19 @@ app.get('/api/currentdata', (req, res) => {
 });
 
 // API endpoint to fetch yesterday data
+// API endpoint to fetch yesterday data
 app.get('/api/yesterdaydata', (req, res) => {
+  const dateValue = req.query.dateValue;
+  if (!dateValue) {
+    res.status(400).json({ error: 'dateValue parameter is required' });
+    return;
+  }
+   const query_1 = 'SELECT dateId, price, dateValue FROM HistoricalElectricityWeather, CalendarDate WHERE HistoricalElectricityWeather.dateId = CalendarDate.id AND dateValue LIKE ?';
+ 
+  // Use a wildcard for the LIKE query
+  const dateValueWithWildcard = `${yesterdayFormatted}%`;
+  
+  db.all(query_1, [dateValueWithWildcard], (err, rows) => {
   const dateValue = req.query.dateValue;
   if (!dateValue) {
     res.status(400).json({ error: 'dateValue parameter is required' });
@@ -104,7 +130,20 @@ app.get('/api/yesterdaydata', (req, res) => {
 });
 
 // API endpoint to fetch tomorrow data
+// API endpoint to fetch tomorrow data
 app.get('/api/tomorrowdata', (req, res) => {
+  const dateValue = req.query.dateValue;
+  if (!dateValue) {
+    res.status(400).json({ error: 'dateValue parameter is required' });
+    return;
+  }
+
+  const query_2 = 'SELECT dateId, price, dateValue FROM HistoricalElectricityWeather, CalendarDate WHERE HistoricalElectricityWeather.dateId = CalendarDate.id AND dateValue LIKE ?';
+ 
+  // Use a wildcard for the LIKE query
+  const dateValueWithWildcard = `${tomorrowFormatted}%`;
+  
+  db.all(query_2, [dateValueWithWildcard], (err, rows) => {
   const dateValue = req.query.dateValue;
   if (!dateValue) {
     res.status(400).json({ error: 'dateValue parameter is required' });
@@ -124,6 +163,7 @@ app.get('/api/tomorrowdata', (req, res) => {
     res.json(rows);
   });
 });
+
 
 
 // API endpoint to fetch past data

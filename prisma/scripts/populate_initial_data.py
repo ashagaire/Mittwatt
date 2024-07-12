@@ -5,6 +5,7 @@ from scripts.generate_date_dataframe import generate_date_dataframe
 import logging
 from datetime import date, timedelta
 import pandas as pd
+from config import conn_params
 
 
 def populate_initial_data():
@@ -12,10 +13,11 @@ def populate_initial_data():
     Populate initial data into the database including weather codes, subscription types, calendar dates,
     historical electricity and weather data.
     """
+    # Connection parameters
     try:
-        conn_mw, cursor_mw = connect_to_db('./db.sqlite')
-        table_to_check = ['WeatherCode', 'SubscriptionType',
-                          'CalendarDate', 'HistoricalElectricityWeather']
+        conn_mw, cursor_mw = connect_to_db(conn_params)
+        table_to_check = ['HistoricalElectricityWeather', 'WeatherCode', 'SubscriptionType',
+                          'CalendarDate']
         if not is_database_empty(cursor_mw, table_to_check):
             logging.info(
                 'The database is not empty. The data has been deleted and refilled.')
@@ -25,7 +27,7 @@ def populate_initial_data():
             conn_mw,
             cursor_mw,
             'WeatherCode',
-            'id, descriptionCode, createdDate, modifiedDate',
+            'id, "descriptionCode", "createdDate", "modifiedDate"',
             './source_data/weather_code.csv'
         )
         # populate subscription_type table
@@ -33,7 +35,7 @@ def populate_initial_data():
             conn_mw,
             cursor_mw,
             'SubscriptionType',
-            'id, descriptionSubscription, createdDate, modifiedDate',
+            'id, "descriptionSubscription", "createdDate", "modifiedDate"',
             './source_data/subscription_types.csv'
         )
         # create date dataframe
@@ -43,7 +45,7 @@ def populate_initial_data():
             conn_mw,
             cursor_mw,
             'CalendarDate',
-            'dateValue, year, quarter, month, day, hour, dayOfWeek, dayName, monthName, yearMonth, createdDate, modifiedDate',
+            '"dateValue", year, quarter, month, day, hour, "dayOfWeek", "dayName", "monthName", "yearMonth", "createdDate", "modifiedDate"',
             date_df
         )
         # get historical weather data
@@ -84,5 +86,7 @@ def populate_initial_data():
         insert_data_fact_table(conn_mw, cursor_mw, 'HistoricalElectricityWeather',
                                'dateId, temperature, precipitation, weatherCodeId, cloudCover, windSpeed10m, shortwaveRadiation, price, createdDate, modifiedDate', archive_electricity_weather)
         logging.info('Database has been populated succesfully')
+        cursor_mw.close()
+        conn_mw.close()
     except Exception as e:
         logging.error(f'Exception occured - {e}')

@@ -3,6 +3,7 @@ from scripts.api_data import get_elec_archive, get_tomorrow_electricity_prices, 
 from scripts.data_insertion import insert_data_fact_table
 from datetime import datetime, timedelta
 import logging
+from config import conn_params
 
 
 def update_database():
@@ -13,7 +14,7 @@ def update_database():
     combines them, and inserts into the database table 'HistoricalElectricityWeather'.
     """
     try:
-        conn_mw, cursor_mw = connect_to_db('./db.sqlite')
+        conn_mw, cursor_mw = connect_to_db(conn_params)
         today = datetime.today()
         if today.weekday() == 0:  # Monday
             date_to_fetch = (today - timedelta(days=2)
