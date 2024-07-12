@@ -11,21 +11,27 @@ import {
 } from "recharts";
 
 interface DailyAverageLineChartProps {
-  data: any;
+  data:
+    | ({ date: string; price: number } | { date: string; price: null })[]
+    | undefined;
   formatterType: string | null;
+}
+
+interface ChartProps {
+  payload?: { price?: number };
 }
 
 const DailyAverageLineChart: React.FC<DailyAverageLineChartProps> = ({
   data,
   formatterType,
 }) => {
-  const tickFormatter = (value: string, index: number) => {
+  const tickFormatter = (value: string) => {
     const [day, month, year] = value.split(".");
 
     return `${day}.${month}.${year}`;
   };
 
-  const tickFormatterYear = (value: string, index: number) => {
+  const tickFormatterYear = (value: string) => {
     const [day, month, year] = value.split(".");
     if (day === "1") {
       return `${day}.${month}.${year}`;
@@ -63,7 +69,7 @@ const DailyAverageLineChart: React.FC<DailyAverageLineChartProps> = ({
               />
             </YAxis>
             <Tooltip
-              formatter={(value, name, props) => [
+              formatter={(value, name, props: ChartProps) => [
                 `Price: ${value !== null ? props.payload?.price?.toFixed(2) + " c/kWh" : "N/A"}`,
               ]}
               labelFormatter={(label) => `Date: ${label}`}

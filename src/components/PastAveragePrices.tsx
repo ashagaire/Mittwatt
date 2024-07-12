@@ -81,19 +81,13 @@ const PastAveragePrices = () => {
     );
   }
 
-  if (
-    weekAveragePriceError ||
-    monthAveragePriceError ||
-    yearAveragePriceError
-  ) {
-    return (
-      <div>
-        Error:{" "}
-        {weekAveragePriceError
-          ? weekAveragePriceError.message
-          : "Unknown Error"}
-      </div>
-    );
+  const errorMessage =
+    weekAveragePriceError?.message ??
+    monthAveragePriceError?.message ??
+    yearAveragePriceError?.message;
+
+  if (errorMessage) {
+    return <div>Error: {errorMessage}</div>;
   }
 
   return (
@@ -114,17 +108,17 @@ const PastAveragePrices = () => {
           <tr className="text-center">
             <td className="border border-gray-500 px-4 py-2">
               {weekAveragePrice
-                ? weekAveragePrice.toFixed(2) + " c/kWh"
+                ? weekAveragePrice?.toFixed(2) + " c/kWh"
                 : "undefined"}
             </td>
             <td className="border border-gray-500 px-4 py-2">
               {monthAveragePrice
-                ? monthAveragePrice.toFixed(2) + " c/kWh"
+                ? monthAveragePrice?.toFixed(2) + " c/kWh"
                 : "undefined"}
             </td>
             <td className="border border-gray-500 px-4 py-2">
               {yearAveragePrice
-                ? yearAveragePrice.toFixed(2) + " c/kWh"
+                ? yearAveragePrice?.toFixed(2) + " c/kWh"
                 : "undefined"}
             </td>
           </tr>
