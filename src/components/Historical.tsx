@@ -18,6 +18,27 @@ interface HistoricalProps {
   dayProp: Date;
 }
 
+interface ChartProps {
+  payload?: {
+    dateData?: {
+      dateValue?: string | Date; // Updated to handle both string and Date types
+    };
+    price?: number;
+  };
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+}
+
+interface DataItem {
+  dateId: number;
+  price: number | null;
+  dateData: {
+    dateValue: Date;
+  };
+}
+
 const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
   const [maximumPrice, setMaximumPrice] = useState(Number.MIN_SAFE_INTEGER);
   const [minimumPrice, setMinimumPrice] = useState(Number.MAX_SAFE_INTEGER);
@@ -125,40 +146,42 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
             <CartesianGrid stroke="#eee" strokeDasharray="5 5" />
             <XAxis
               dataKey="dateData.dateValue"
-              tickFormatter={(value) => {
-                return value.getUTCHours();
+              tickFormatter={(value: string | Date | undefined): string => {
+                return value ? new Date(value).getUTCHours().toString() : "";
               }}
             >
               <Label value="Hours" offset={5} position="bottom" />
             </XAxis>
-            // Format x-axis labels
             <YAxis tickCount={10}>
               <Label value="Price" offset={5} position="left" angle={-90} />
             </YAxis>
             <Tooltip
-              formatter={(value, name, props) => [
+              formatter={(value, name, props: ChartProps) => [
                 `Price: ${value !== null ? props.payload?.price?.toFixed(2) + " c/kWh" : "N/A"}`,
               ]}
-              labelFormatter={(label) =>
-                `Hour: ${label.toISOString("fi-FI", { hour: "2-digit", minute: "2-digit" }).substring(11, 16)}`
+              labelFormatter={(label: Date) =>
+                `Hour: ${label.toISOString().substring(11, 16)}`
               }
             />
             <Bar
               dataKey="price"
               fill="#16A34A"
-              shape={(props: any) => {
+              shape={(props: ChartProps) => {
                 const { x, y, width, height, payload } = props;
-                const barHour = new Date(
-                  payload.dateData.dateValue,
-                ).getUTCHours();
-                const barDay = new Date(payload.dateData.dateValue).getDate();
+                const dateValue = payload?.dateData?.dateValue;
+                const barHour = dateValue
+                  ? new Date(dateValue).getUTCHours()
+                  : -1;
+                const barDay = dateValue ? new Date(dateValue).getDate() : -1;
+                const currentHour = new Date().getUTCHours();
+                const currentDay = new Date().getDate();
                 const barColor =
-                  barHour === new Date().getHours() &&
-                  barDay === new Date().getDate()
+                  barHour === currentHour && barDay === currentDay
                     ? "#166534"
                     : "#16A34A";
-                const positiveHeight = Math.abs(height); // Use absolute height
-                const positiveY = height >= 0 ? y : y - positiveHeight; // Adjust y for negative values
+                const positiveHeight = Math.abs(height ?? 0); // Use absolute height
+                const positiveY =
+                  (height ?? 0) >= 0 ? y ?? 0 : (y ?? 0) - positiveHeight; // Adjust y for negative values
                 return (
                   <rect
                     x={x}
@@ -189,8 +212,8 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
             <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
             <XAxis
               dataKey="dateData.dateValue"
-              tickFormatter={(value) => {
-                return value.getUTCHours();
+              tickFormatter={(value: Date): string => {
+                return value.getUTCHours().toString();
               }}
             >
               <Label value="Hours" offset={5} position="bottom" />
@@ -199,11 +222,11 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
               <Label value="Price" offset={5} position="left" angle={-90} />
             </YAxis>
             <Tooltip
-              formatter={(value, name, props) => [
+              formatter={(value, name, props: ChartProps) => [
                 `Price: ${value !== null ? props.payload?.price?.toFixed(2) + " c/kWh" : "N/A"}`,
               ]}
-              labelFormatter={(label) =>
-                `Hour: ${label.toISOString("fi-FI", { hour: "2-digit", minute: "2-digit" }).substring(11, 16)}`
+              labelFormatter={(label: Date) =>
+                `Hour: ${label.toISOString().substring(11, 16)}`
               }
             />
           </LineChart>
@@ -220,7 +243,7 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
           </thead>
           <tbody>
             {data && data.length > 0 ? (
-              data.map((item: any, index: number) => (
+              data.map((item: DataItem, index: number) => (
                 <tr
                   key={index}
                   className={` ${item.dateData.dateValue.getUTCHours() === new Date().getHours() && item.dateData.dateValue.getDate() === new Date().getDate() ? "bg-green-200 text-green-800" : "bg-green-50 text-black"}`}
