@@ -172,10 +172,10 @@ export const priceRouter = createTRPCRouter({
           const averagePriceResult: AveragePriceResult[] = await ctx.db.$queryRaw`
             SELECT AVG(price) AS averagePrice
             FROM (
-              SELECT main.HistoricalElectricityWeather.price 
-              FROM main.HistoricalElectricityWeather 
-              LEFT JOIN main.CalendarDate AS cd 
-              ON cd.id = main.HistoricalElectricityWeather.dateId 
+              SELECT HistoricalElectricityWeather.price 
+              FROM HistoricalElectricityWeather 
+              LEFT JOIN CalendarDate AS cd 
+              ON cd.id = HistoricalElectricityWeather.dateId 
               WHERE cd.dateValue >= ${startDate} AND cd.dateValue <= ${endDate}
             )`;
 
