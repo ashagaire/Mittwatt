@@ -1,4 +1,4 @@
-# Step-by-Step Instructions
+# How to populate database
 
 ## Step 1: Install Python
 
@@ -68,6 +68,19 @@ pip install -r requirements.txt
 
 ## Step3: Run script in background
 
+Specify your database connection parameters:
+
+Create file config.py in prisma derictory and add conn_params:
+
+```
+conn_params = {
+    'dbname': "db_name",
+    'user': "user_name",
+    'password': "password",
+    'host': "localhost",
+    'port': "5432"}
+```
+
 Run the following command:
 
 ```
@@ -117,3 +130,56 @@ ps aux | grep pythonw
 ```
 kill <PID>
 ```
+
+# Switch SQLite to PostgreSQL
+
+1. Install PostgreSQL Client
+2. Create a new PostgreSQL Database (pgAdmin or command line)):
+   Command line:
+
+   ```
+   psql -h localhost -p 5432 -U postgres
+   ```
+   ```
+   CREATE DATABASE my_new_database;
+   ```
+3. Update Environment Variables:
+   Go to .env file
+
+   ```
+   DATABASE_URL="postgresql://username:password@localhost:5432/mydatabase"
+   ```
+   Replace `username`, `password`, `localhost`, `5432`, and `mydatabase` with your actual PostgreSQL credentials and database name.
+4. Install PostgreSQL Client Library:
+
+   ```
+   npm install pg
+   ```
+   In case of error (for example: *npm WARN ERESOLVE overriding peer dependency*):
+   Clear npm cache:
+
+   ```
+   npm cache clean --force
+   ```
+   Delete `node_modules` and `package-lock.json`
+
+   Update npm:
+
+   ```
+   npm install -g npm
+   ```
+   Reinstall Dependencies:
+
+   ```
+   npm install
+   ```
+5. Migrate Database Schema:
+   Since you're switching databases, you need to migrate your existing schema.
+
+   Delete migration folder
+
+   Run migrate command:
+
+   ```
+   npx prisma migrate dev
+   ```
