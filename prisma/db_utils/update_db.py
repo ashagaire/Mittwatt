@@ -1,9 +1,9 @@
-from scripts.db_utils import connect_to_db
-from scripts.api_data import get_elec_archive, get_tomorrow_electricity_prices, get_weather_data
-from scripts.data_insertion import insert_data_fact_table
+from db_utils.db_utils import connect_to_db
+from db_utils.api_data import get_elec_archive, get_tomorrow_electricity_prices, get_weather_data
+from db_utils.data_insertion import insert_data_fact_table
 from datetime import datetime, timedelta
 import logging
-from config import conn_params
+import numpy as np
 
 
 def update_database():
@@ -14,7 +14,7 @@ def update_database():
     combines them, and inserts into the database table 'HistoricalElectricityWeather'.
     """
     try:
-        conn_mw, cursor_mw = connect_to_db(conn_params)
+        conn_mw, cursor_mw = connect_to_db()
         today = datetime.today()
         if today.weekday() == 0:  # Monday
             date_to_fetch = (today - timedelta(days=2)
@@ -54,6 +54,7 @@ def update_database():
             .loc[weather_forecast['date_value'] > date_to_fetch]
             .reset_index(drop=True)
             .assign(price=lambda df: df['date_value'].map(electricity_price_tomorrow['price']))
+            .replace(np.nan, None)
         )
         insert_data_fact_table(conn_mw, cursor_mw, 'HistoricalElectricityWeather',
                                'dateId, temperature, precipitation, weatherCodeId, cloudCover, windSpeed10m, shortwaveRadiation, price, createdDate, modifiedDate', current_weather_electricity)

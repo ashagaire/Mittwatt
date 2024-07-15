@@ -58,7 +58,7 @@ venv\Scripts\activate
 ## Step 3: Install Required Libraries
 
 Open Command Prompt.
-Navigate to prisma Directory.
+Navigate to electricity-shoc Directory.
 Install the Required Libraries:
     Run the following command to install all the dependencies listed in the requirements.txt file:
 
@@ -69,17 +69,6 @@ pip install -r requirements.txt
 ## Step3: Run script in background
 
 Specify your database connection parameters:
-
-Create file config.py in prisma derictory and add conn_params:
-
-```
-conn_params = {
-    'dbname': "db_name",
-    'user': "user_name",
-    'password': "password",
-    'host': "localhost",
-    'port': "5432"}
-```
 
 Run the following command:
 
@@ -166,12 +155,13 @@ kill <PID>
    Update npm:
 
    ```
-   npm install -g npm
+   ? install -g npm
+   npm install -g pnpm
    ```
    Reinstall Dependencies:
 
    ```
-   npm install
+   pnpm install
    ```
 5. Migrate Database Schema:
    Since you're switching databases, you need to migrate your existing schema.
@@ -181,5 +171,5 @@ kill <PID>
    Run migrate command:
 
    ```
-   npx prisma migrate dev
+   pnpm prisma migrate dev
    ```

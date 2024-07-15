@@ -1,11 +1,11 @@
-from scripts.db_utils import connect_to_db, is_database_empty, delete_data_from_table
-from scripts.data_insertion import insert_data_dim_table, insert_data_fact_table
-from scripts.api_data import get_weather_data, get_elec_archive
-from scripts.generate_date_dataframe import generate_date_dataframe
+from db_utils.db_utils import connect_to_db, is_database_empty, delete_data_from_table
+from db_utils.data_insertion import insert_data_dim_table, insert_data_fact_table
+from db_utils.api_data import get_weather_data, get_elec_archive
+from db_utils.generate_date_dataframe import generate_date_dataframe
 import logging
 from datetime import date, timedelta
 import pandas as pd
-from config import conn_params
+import numpy as np
 
 
 def populate_initial_data():
@@ -15,9 +15,9 @@ def populate_initial_data():
     """
     # Connection parameters
     try:
-        conn_mw, cursor_mw = connect_to_db(conn_params)
-        table_to_check = ['HistoricalElectricityWeather', 'WeatherCode', 'SubscriptionType',
-                          'CalendarDate']
+        conn_mw, cursor_mw = connect_to_db()
+        table_to_check = ['HistoricalElectricityWeather',
+                          'WeatherCode', 'SubscriptionType']
         if not is_database_empty(cursor_mw, table_to_check):
             logging.info(
                 'The database is not empty. The data has been deleted and refilled.')
@@ -38,16 +38,17 @@ def populate_initial_data():
             'id, "descriptionSubscription", "createdDate", "modifiedDate"',
             './source_data/subscription_types.csv'
         )
-        # create date dataframe
-        date_df = generate_date_dataframe('2022-01-01', '2024-12-31', 'h')
-        # Save to SQLite database
-        insert_data_dim_table(
-            conn_mw,
-            cursor_mw,
-            'CalendarDate',
-            '"dateValue", year, quarter, month, day, hour, "dayOfWeek", "dayName", "monthName", "yearMonth", "createdDate", "modifiedDate"',
-            date_df
-        )
+        if is_database_empty(cursor_mw, ['CalendarDate']):
+            # create date dataframe
+            date_df = generate_date_dataframe('2022-01-01', '2024-12-31', 'h')
+            # Save to SQLite database
+            insert_data_dim_table(
+                conn_mw,
+                cursor_mw,
+                'CalendarDate',
+                '"dateValue", year, quarter, month, day, hour, "dayOfWeek", "dayName", "monthName", "yearMonth", "createdDate", "modifiedDate"',
+                date_df
+            )
         # get historical weather data
         weather_archive = get_weather_data(
             expire_after=-1,
@@ -82,6 +83,7 @@ def populate_initial_data():
         archive_electricity_weather['price'] = (
             archive_electricity_weather['date_value'].map(
                 elec_archive['price'])
+            .replace(np.nan, None)
         )
         insert_data_fact_table(conn_mw, cursor_mw, 'HistoricalElectricityWeather',
                                'dateId, temperature, precipitation, weatherCodeId, cloudCover, windSpeed10m, shortwaveRadiation, price, createdDate, modifiedDate', archive_electricity_weather)

@@ -1,11 +1,15 @@
 import psycopg2
 import logging
 from psycopg2 import sql
+import os
+from dotenv import load_dotenv
 
 
-def connect_to_db(conn_params):
+def connect_to_db():
     try:
-        conn = psycopg2.connect(**conn_params)
+        load_dotenv()
+        database_url = os.getenv('DATABASE_URL')
+        conn = psycopg2.connect(database_url)
         cur = conn.cursor()
         logging.info('Database connection established')
         return conn, cur

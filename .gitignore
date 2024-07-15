@@ -63,3 +63,6 @@ yarn-error.log*
 /algorithm/prediction.py
 /algorithm/nohup.out
 /algorithm/dataset
+
+# Model
+/ml_models/ml_model.log
