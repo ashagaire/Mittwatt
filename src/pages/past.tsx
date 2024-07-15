@@ -38,13 +38,13 @@ export default function Past() {
   const {
     data: yearData,
     error: yearError,
-    isLoading: yearUsLoading,
+    isLoading: yearIsLoading,
   } = api.price.getHistoryPeriodDailyAverage.useQuery({
     startDate: startYearDate,
     endDate: endYearDate,
   });
 
-  if (isLoading) {
+  if (isLoading ?? yearIsLoading) {
     return (
       <>
         <div className=" inline h-8 w-8 text-gray-200">
@@ -54,8 +54,8 @@ export default function Past() {
     );
   }
 
-  if (error) {
-    return <div>Error: {error ? error.message : "Unknown Error"}</div>;
+  if (error ?? yearError) {
+    return <div>Error: {error ?? yearError}</div>;
   }
 
   return (

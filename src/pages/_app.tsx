@@ -11,7 +11,7 @@ const inter = Inter({
   variable: "--font-sans",
 });
 
-const MyApp: AppType<{}> = ({ Component, pageProps: { ...pageProps } }) => {
+const MyApp: AppType<object> = ({ Component, pageProps: { ...pageProps } }) => {
   return (
     <Layout>
       <Component {...pageProps} />

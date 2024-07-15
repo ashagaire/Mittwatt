@@ -9,9 +9,9 @@ export default function Home() {
           Your trusted partner in making data-driven decisions in the energy
           market. Our state-of-the-art platform leverages advanced machine
           learning algorithms to predict future electricity prices based on
-          historical data. Whether you're an energy trader, a utility provider,
-          or an industrial consumer, our tool can help you optimize your energy
-          strategy and maximize your profits.
+          historical data. Whether you&lsquo;re an energy trader, a utility
+          provider, or an industrial consumer, our tool can help you optimize
+          your energy strategy and maximize your profits.
         </p>
         <p className="pb-4 text-3xl font-bold">What does it contain?</p>
         <ul className="list-disc pb-6 text-2xl">
