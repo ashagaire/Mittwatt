@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@prisma/client";
 import {
   createTRPCRouter,
   publicProcedure,
@@ -25,7 +25,9 @@ type CalendarDate = {
 };
 
 interface AveragePriceResult {
-  averagePrice: number;
+  _avg: {
+    price: number | null;
+  };
 }
 
 // function to get the IDs for a given day
@@ -187,22 +189,35 @@ export const priceRouter = createTRPCRouter({
         .query(async ({ input, ctx }) => {
 
           try {
-            const startDate = input.startDate.toISOString().slice(0, 19).replace('T', ' ');
-            const endDate = input.endDate.toISOString().slice(0, 19).replace('T', ' ');
+          
+            const startDate = input.startDate.toISOString();
+            const endDate = input.endDate.toISOString();
 
-            const averagePriceResult: AveragePriceResult[] = await ctx.db.$queryRaw`
-              SELECT AVG(price) AS averagePrice
-              FROM (
-                SELECT main.HistoricalElectricityWeather.price 
-                FROM main.HistoricalElectricityWeather 
-                LEFT JOIN main.CalendarDate AS cd 
-                ON cd.id = main.HistoricalElectricityWeather.dateId 
-                WHERE cd.dateValue >= ${startDate} AND cd.dateValue <= ${endDate}
-              )`;
-
-            const averagePrice = averagePriceResult[0]?.averagePrice ?? null;
+                const averagePriceResult: AveragePriceResult = await ctx.db.historicalElectricityWeather.aggregate({
+                  _avg: {
+                    price: true, // Average the 'price' field
+                  },
+                  where: {
+                    dateId: {
+                      in: await ctx.db.calendarDate.findMany({
+                        where: {
+                          dateValue: {
+                            gte: startDate,
+                            lte: endDate,
+                          },
+                        },
+                        select: {
+                          id: true, // Select only the 'id' field
+                        },
+                      }).then((data) => data.map((d) => d.id)), // Extract 'id' from each object
+                    },
+                  },
+                });
+                
+            const averagePrice: number | null = averagePriceResult._avg.price ?? null;
 
             return { averagePrice };
+          
           } catch (error) {
             throw new TRPCError({ code: "BAD_REQUEST", message: "Something went wrong" });
           }
