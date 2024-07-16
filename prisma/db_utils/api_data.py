@@ -5,7 +5,7 @@ import pandas as pd
 import logging
 from datetime import datetime
 import requests
-from scripts.date_utils import get_next_hour
+from db_utils.date_utils import get_next_hour
 import time
 
 
