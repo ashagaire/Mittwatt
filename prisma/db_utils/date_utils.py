@@ -6,6 +6,7 @@ def get_next_hour(dt: datetime) -> datetime:
     dt = dt + timedelta(hours=1)
     return dt.replace(minute=0, second=0, microsecond=0)
 
+
 def convert_timestamp(obj):
     if isinstance(obj, pd.Timestamp):
         return obj.isoformat()

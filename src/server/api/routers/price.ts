@@ -1,8 +1,9 @@
 import { z } from "zod";
-import { PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@prisma/client";
 import {
   createTRPCRouter,
   publicProcedure,
+  TRPCError,
 } from "~/server/api/trpc";
 
 
@@ -24,7 +25,9 @@ type CalendarDate = {
 };
 
 interface AveragePriceResult {
-  averagePrice: number;
+  _avg: {
+    price: number | null;
+  };
 }
 
 // function to get the IDs for a given day
@@ -91,7 +94,7 @@ async function ForecastDayResults(ctx: Context, year: number, month: number, day
 // get the average price for each day in the given period
 // The function works for both History and Forecast data based on the type parameter
 async function getDailyAverage(ctx: Context, startDate: Date, endDate: Date, type: string) {
-  let currentDate = new Date(startDate);
+  const currentDate = new Date(startDate);
   const averagePrices = [];
   while(currentDate <= new Date(endDate)) {
     let resultData: HistoryItem[] = [];
@@ -103,7 +106,7 @@ async function getDailyAverage(ctx: Context, startDate: Date, endDate: Date, typ
 
     if(resultData && resultData.length > 0) {
       let averagePrice = resultData.reduce((sum, obj) => {
-        if (obj && obj.price !== null) {
+        if (obj?.price !== null) {
           return sum + obj.price;
         } else {
           return sum;
@@ -133,32 +136,51 @@ export const priceRouter = createTRPCRouter({
     getHistoryDay: publicProcedure
         .input(z.object({ date: z.object({ day: z.number(), month: z.number(), year: z.number() }) }))
         .query(async ({ input, ctx }) => {
+          try {
             const historicalData = await HistoryDayResults(ctx, input.date.year, input.date.month, input.date.day);
 
             return historicalData;
+          } catch (error) {
+            throw new TRPCError({ code: "BAD_REQUEST", message: "Something went wrong" });
+          }
+            
         }),
 
     getForecastDay: publicProcedure
         .input(z.object({ date: z.object({ day: z.number(), month: z.number(), year: z.number() }) }))
         .query(async ({ input, ctx }) => {
-          const forecastData = await ForecastDayResults(ctx, input.date.year, input.date.month, input.date.day);
+          try {
+            const forecastData = await ForecastDayResults(ctx, input.date.year, input.date.month, input.date.day);
 
-          return forecastData;
+            return forecastData;
+          } catch (error) {
+            throw new TRPCError({ code: "BAD_REQUEST", message: "Something went wrong" });
+          }
         }),
 
     getHistoryPeriodDailyAverage: publicProcedure
         .input(z.object({ startDate: z.date(), endDate: z.date() }))
         .query(async ({ input, ctx }) => {
-          const averagePrices = await getDailyAverage(ctx, input.startDate, input.endDate, 'history');
-          return averagePrices;
+          try {
+            const averagePrices = await getDailyAverage(ctx, input.startDate, input.endDate, 'history');
+            return averagePrices;
+          } catch (error) {
+            throw new TRPCError({ code: "BAD_REQUEST", message: "Something went wrong" });
+          }
+          
         }),
 
 
     getForecastPeriodDailyAverage: publicProcedure
         .input(z.object({ startDate: z.date(), endDate: z.date() }))
         .query(async ({ input, ctx }) => {
-          const averagePrices = await getDailyAverage(ctx, input.startDate, input.endDate, 'forecast');
-          return averagePrices;
+          try {
+            const averagePrices = await getDailyAverage(ctx, input.startDate, input.endDate, 'forecast');
+            return averagePrices;
+          } catch (error) {
+            throw new TRPCError({ code: "BAD_REQUEST", message: "Something went wrong" });
+          }
+          
         }),
 
 
@@ -166,22 +188,41 @@ export const priceRouter = createTRPCRouter({
         .input(z.object({ startDate: z.date(), endDate: z.date() }))
         .query(async ({ input, ctx }) => {
 
-          const startDate = input.startDate.toISOString().slice(0, 19).replace('T', ' ');
-          const endDate = input.endDate.toISOString().slice(0, 19).replace('T', ' ');
+          try {
+          
+            const startDate = input.startDate.toISOString();
+            const endDate = input.endDate.toISOString();
 
-          const averagePriceResult: AveragePriceResult[] = await ctx.db.$queryRaw`
-            SELECT AVG(price) AS averagePrice
-            FROM (
-              SELECT HistoricalElectricityWeather.price 
-              FROM HistoricalElectricityWeather 
-              LEFT JOIN CalendarDate AS cd 
-              ON cd.id = HistoricalElectricityWeather.dateId 
-              WHERE cd.dateValue >= ${startDate} AND cd.dateValue <= ${endDate}
-            )`;
+                const averagePriceResult: AveragePriceResult = await ctx.db.historicalElectricityWeather.aggregate({
+                  _avg: {
+                    price: true, // Average the 'price' field
+                  },
+                  where: {
+                    dateId: {
+                      in: await ctx.db.calendarDate.findMany({
+                        where: {
+                          dateValue: {
+                            gte: startDate,
+                            lte: endDate,
+                          },
+                        },
+                        select: {
+                          id: true, // Select only the 'id' field
+                        },
+                      }).then((data) => data.map((d) => d.id)), // Extract 'id' from each object
+                    },
+                  },
+                });
+                
+            const averagePrice: number | null = averagePriceResult._avg.price ?? null;
 
-          const averagePrice = averagePriceResult[0]?.averagePrice || null;
+            return { averagePrice };
+          
+          } catch (error) {
+            throw new TRPCError({ code: "BAD_REQUEST", message: "Something went wrong" });
+          }
 
-          return { averagePrice };
+          
         }),
 
 

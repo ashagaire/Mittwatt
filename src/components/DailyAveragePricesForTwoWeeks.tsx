@@ -4,23 +4,30 @@ import { useMemo } from "react";
 interface DailyAveragePricesForTwoWeeksProps {
   startDate: Date;
   endDate: Date;
-  data: any;
+  data:
+    | ({ date: string; price: number } | { date: string; price: null })[]
+    | undefined;
+}
+
+interface dataItem {
+  date: string;
+  price: number | null;
 }
 
 const DailyAveragePricesForTwoWeeks: React.FC<
   DailyAveragePricesForTwoWeeksProps
 > = ({ startDate, endDate, data }) => {
-  const maxPrice: number = useMemo(() => {
+  const maxPrice: number | undefined = useMemo(() => {
     return data?.reduce(
-      (maxValue: number, item: any) => Math.max(maxValue, item.price || 0),
+      (maxValue: number, item: dataItem) => Math.max(maxValue, item.price ?? 0),
       0,
     );
   }, [data]);
 
-  const minPrice = useMemo(() => {
+  const minPrice: number | undefined = useMemo(() => {
     return data?.reduce(
-      (minValue: number, item: any) =>
-        Math.min(minValue, item.price || Infinity),
+      (minValue: number, item: dataItem) =>
+        Math.min(minValue, item.price ?? Infinity),
       0,
     );
   }, [data]);
@@ -49,10 +56,10 @@ const DailyAveragePricesForTwoWeeks: React.FC<
           </thead>
           <tbody>
             {data && data.length > 0 ? (
-              data.map((item: any, index: number) => (
+              data.map((item: dataItem, index: number) => (
                 <tr
                   key={index}
-                  className={` ${item.price?.toFixed(2) === maxPrice.toFixed(2) ? "bg-green-50 text-red-600" : ""} ${item.price?.toFixed(2) === minPrice.toFixed(2) ? "bg-green-50 text-green-600" : ""} bg-green-50 text-black`}
+                  className={` ${item.price?.toFixed(2) === maxPrice?.toFixed(2) ? "bg-green-50 text-red-600" : ""} ${item.price?.toFixed(2) === minPrice?.toFixed(2) ? "bg-green-50 text-green-600" : ""} bg-green-50 text-black`}
                 >
                   <td className="border border-gray-500 px-4 py-2 text-center">
                     {item.date}

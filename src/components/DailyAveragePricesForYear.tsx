@@ -3,7 +3,9 @@ import DailyAverageLineChart from "./DailyAverageLineChart";
 interface DailyAveragePricesForYearProps {
   startDate: Date;
   endDate: Date;
-  data: any;
+  data:
+    | ({ date: string; price: number } | { date: string; price: null })[]
+    | undefined;
 }
 
 const DailyAveragePricesForYear: React.FC<DailyAveragePricesForYearProps> = ({

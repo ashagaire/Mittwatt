@@ -1,8 +1,8 @@
 import schedule
 import time
 import logging
-from scripts.populate_initial_data import populate_initial_data
-from scripts.update_db import update_database
+from db_utils.populate_initial_data import populate_initial_data
+from db_utils.update_db import update_database
 
 # setup logging
 # Configure logging
@@ -30,7 +30,6 @@ def scheduled_job():
 
 # run job immediately
 job()
-
 
 # Schedule the job every weekday at 15:00 (3 PM)
 schedule.every().monday.at("15:00").do(scheduled_job)
