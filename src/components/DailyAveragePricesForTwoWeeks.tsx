@@ -28,7 +28,7 @@ const DailyAveragePricesForTwoWeeks: React.FC<
     return data?.reduce(
       (minValue: number, item: dataItem) =>
         Math.min(minValue, item.price ?? Infinity),
-      0,
+      Infinity,
     );
   }, [data]);
 
