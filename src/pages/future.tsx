@@ -4,11 +4,11 @@ import DailyAveragePricesForTwoWeeks from "~/components/DailyAveragePricesForTwo
 
 export default function Future() {
   const startDate = useMemo(
-    () => new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+    () => new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
     [],
   );
   const endDate = useMemo(
-    () => new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
+    () => new Date(Date.now() + 13 * 24 * 60 * 60 * 1000),
     [],
   );
   const { data, error, isLoading } =
