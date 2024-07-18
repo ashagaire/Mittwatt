@@ -93,7 +93,10 @@ async function ForecastDayResults(ctx: Context, year: number, month: number, day
 
 // get the average price for each day in the given period
 // The function works for both History and Forecast data based on the type parameter
-async function getDailyAverage(ctx: Context, startDate: Date, endDate: Date, type: string) {
+// The function returns an array of objects with the date and the average price
+// The function can be uncommented and used instead of the oter getDailyAverage function after testing the performance of the other function
+
+/* async function getDailyAverage(ctx: Context, startDate: Date, endDate: Date, type: string) {
   const currentDate = new Date(startDate);
   const averagePrices = [];
   while(currentDate <= new Date(endDate)) {
@@ -127,7 +130,124 @@ async function getDailyAverage(ctx: Context, startDate: Date, endDate: Date, typ
     currentDate.setDate(currentDate.getDate() + 1);
   }
   return averagePrices;
+} */
+
+
+
+
+
+
+
+
+  // function to group the data by date and calculate the average price
+
+  function groupByDateAndAveragePrice(resultData: HistoryItem[]) {
+    const groupedByDate: Record<string, { date: string, sum: number, count: number, price: number | null }> = {};
+  
+    for (const item of resultData) {
+      // Check for undefined dateString before processing
+      const dateString = item?.dateData?.dateValue?.toISOString().split('T')[0];
+      if (!dateString) {
+        continue;
+      }
+  
+      // Type guard to ensure existence of entry in groupedByDate
+      const entry = groupedByDate[dateString];
+      if (entry) {
+        entry.sum += item.price ?? 0;
+        entry.count += 1;
+      } else {
+        // Create a new entry if it doesn't exist
+        groupedByDate[dateString] = {
+          date: dateString,
+          sum: item.price ?? 0,
+          count: 1,
+          price: null,
+        };
+      }
+    }
+  
+    // Optional chaining for safety in average calculation
+    for (const date in groupedByDate) {
+      if (groupedByDate[date]) {
+        groupedByDate[date].price = groupedByDate[date]?.sum / groupedByDate[date]?.count;
+      }
+    }
+  
+    return Object.values(groupedByDate);
+  }
+  
+
+
+
+
+
+// get daily average price for a given period for both history and forecast data
+
+async function getDailyAverage(ctx: Context, startDate: Date, endDate: Date, type: string) {
+  const startDateString = startDate.toISOString();
+  const endDateString = endDate.toISOString();
+
+  let resultData: HistoryItem[] = [];
+
+  if (type === 'history') {
+    resultData = await ctx.db.historicalElectricityWeather.findMany({
+      where: {
+        dateData: {
+          dateValue: {
+            gte: startDateString,
+            lte: endDateString,
+          },
+        },
+      },
+      select: {
+        dateId: true,
+        dateData: {
+          select: {
+            dateValue: true,
+          },
+        },
+        price: true,
+      },
+    });
+  } else if (type === 'forecast') {
+    resultData = await ctx.db.forecastElectricityPrice.findMany({
+      where: {
+        dateData: {
+          dateValue: {
+            gte: startDateString,
+            lte: endDateString,
+          },
+        },
+      },
+      select: {
+        dateId: true,
+        dateData: {
+          select: {
+            dateValue: true,
+          },
+        },
+        price: true,
+      },
+    });
+  } else {
+    throw new Error("Invalid type");
+  }
+
+
+  const averagePricesWitSumAndCount = groupByDateAndAveragePrice(resultData);
+
+  const averagePrices = averagePricesWitSumAndCount.map((item) => ({
+    date: new Date(item.date).getDate()+ '.' + (new Date(item.date).getMonth()+1) + '.' + new Date(item.date).getFullYear(),
+    price: item.price,
+  }));
+
+  return averagePrices;
 }
+
+
+
+
 
 
 export const priceRouter = createTRPCRouter({    
