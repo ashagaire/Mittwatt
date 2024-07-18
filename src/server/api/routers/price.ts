@@ -90,55 +90,6 @@ async function ForecastDayResults(ctx: Context, year: number, month: number, day
   return forecastData;
 }
 
-
-// get the average price for each day in the given period
-// The function works for both History and Forecast data based on the type parameter
-// The function returns an array of objects with the date and the average price
-// The function can be uncommented and used instead of the oter getDailyAverage function after testing the performance of the other function
-
-/* async function getDailyAverage(ctx: Context, startDate: Date, endDate: Date, type: string) {
-  const currentDate = new Date(startDate);
-  const averagePrices = [];
-  while(currentDate <= new Date(endDate)) {
-    let resultData: HistoryItem[] = [];
-    if(type === 'history') {
-      resultData = await HistoryDayResults(ctx, currentDate.getFullYear(), currentDate.getMonth() + 1, currentDate.getDate());
-    } else if (type === 'forecast') {
-      resultData = await ForecastDayResults(ctx, currentDate.getFullYear(), currentDate.getMonth() + 1, currentDate.getDate());
-    }
-
-    if(resultData && resultData.length > 0) {
-      let averagePrice = resultData.reduce((sum, obj) => {
-        if (obj?.price !== null) {
-          return sum + obj.price;
-        } else {
-          return sum;
-        }
-      }, 0);
-      averagePrice = averagePrice / resultData.length;
-      averagePrices.push({
-        date: currentDate.getDate()+ '.' + (currentDate.getMonth()+1) + '.' + currentDate.getFullYear(),
-        price: averagePrice
-      });
-    } else {
-      averagePrices.push({
-        date: currentDate.getDate()+ '.' + (currentDate.getMonth()+1) + '.' + currentDate.getFullYear(),
-        price: null
-      });
-    }
-    
-    currentDate.setDate(currentDate.getDate() + 1);
-  }
-  return averagePrices;
-} */
-
-
-
-
-
-
-
-
   // function to group the data by date and calculate the average price
 
   function groupByDateAndAveragePrice(resultData: HistoryItem[]) {
