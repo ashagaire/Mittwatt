@@ -1,29 +1,96 @@
-# Create T3 App
+# MittWatt
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+MittWatt is a web application designed to provide insights into electricity prices in the Finnish market. It offers real-time data on current electricity prices, historical data for the past two weeks, and predictions for the next two weeks.
 
-## What's next? How do I make an app with this?
+## Table of Contents
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+- [Features](#features)
+- [Project Structure](#project-structure)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Usage](#usage)
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## Features
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+- **Current Prices**: View the current electricity prices in Finland.
+- **Historical Data**: Access statistics on electricity prices for the past two weeks.
+- **Future Predictions**: Get predictions for electricity prices for the next two weeks.
 
-## Learn More
+## Project Structure
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+The MittWatt project is divided into four main parts:
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+1. **Prediction Model**: Utilizes machine learning algorithms to forecast electricity prices for the next two weeks.
+2. **Data Retrieval Script**: A Python script that fetches historical electricity prices for the past two years and the current prices.
+3. **Web Application**: Developed using the T3 stack (TRPC, Tailwind CSS, Next.js) for a seamless user experience.
+4. **API Tests**: Ensures the reliability and accuracy of the API endpoints.
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+## Prerequisites
 
-## How do I deploy this?
+Before you begin, ensure you have met the following requirements:
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+- Node.js (version 14.x or higher)
+- PostgreSQL (version 12.x or higher)
+- Python (version 3.7 or higher)
+
+## Installation
+
+To set up the project locally, follow these steps:
+
+1. **Install pnpm**:
+
+   ```bash
+   npm install -g pnpm
+   ```
+
+2. **Clone the repository**:
+
+   ```bash
+   git clone https://github.com/[username]/mittwatt.git
+   cd mittwatt
+   ```
+
+3. **Install dependencies**:
+
+   ```bash
+   pnpm install
+   ```
+
+4. **Set up the database**:
+
+   - Ensure you have PostgreSQL installed and running.
+   - Create a new database and update the .env file with your database credentials as shown below:
+
+   ```plaintext
+   DATABASE_URL="postgresql://[username]:[password]@[host_name]:[port_number]/[database_name]"
+   ```
+
+   where
+
+   - `[username]` is the username of the database user.
+   - `[password]` is the password of the database user.
+   - `[host_name]` is the host name of the database.
+   - `[port_number]` is the port number of the database.
+   - `[database_name]` is the name of the database.
+
+5. **Run database migrations**:
+
+   ```bash
+   pnpm prisma migrate dev
+   ```
+
+6. **Run data retrieval script**:
+   Run the scripts for the prediction model and historical data retrieval. Please check the README.md under the `prisma` folder and `ml_models` folder for more details.
+
+7. **Start the development server**:
+   ```bash
+   pnpm dev
+   ```
+
+## Usage
+
+Once the development server is running, you can access the web application at `http://localhost:3000`. The application consists of three main tabs:
+
+- **Current**: Displays the current electricity prices.
+- **Past**: Shows historical data for the past two weeks.
+- **Future**: Provides predictions for the next two weeks.
