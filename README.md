@@ -24,6 +24,7 @@ The MittWatt project is divided into four main parts:
 2. **Data Retrieval Script**: A Python script that fetches historical electricity prices for the past two years and the current prices.
 3. **Web Application**: Developed using the T3 stack (TRPC, Tailwind CSS, Next.js) for a seamless user experience.
 4. **API Tests**: Ensures the reliability and accuracy of the API endpoints.
+5. **Deployment on AWS**: Preparing the application for deployment on AWS.
 
 ## Prerequisites
 
@@ -80,14 +81,20 @@ To set up the project locally, follow these steps:
    ```
 
 6. **Run data retrieval script**:
-   Run the scripts for the prediction model and historical data retrieval. Please check the README.md under the `prisma` folder and `ml_models` folder for more details.
+   Run the scripts for the prediction model and historical data retrieval. Please check the [README.md](./prisma/README.md) under the `prisma` folder and [README.md](./ml_models/README.md) under the `ml_models` folder for more details.
 
 7. **Start the development server**:
    ```bash
    pnpm dev
    ```
 
-To deply the project to production, follow these steps:
+## Usage
+
+Once the development server is running, you can access the web application at `http://localhost:3000`. The application consists of three main tabs:
+
+- **Current**: Displays the current electricity prices.
+- **Past**: Shows historical data for the past two weeks.
+- **Future**: Provides predictions for the next two weeks.
 
 ## Project Deployment on AWS
 
@@ -285,36 +292,32 @@ This README file provides detailed steps for deploying a web application on AWS 
 
    Add the following content to duck.sh:
 
-   Certainly! Here is the content in one place, ready to be copied directly into your README.md file:
+   ```bash
+   echo url="https://www.duckdns.org/update?domains=your-domain&token=your-token&ip=" | curl -k -o ~/duckdns/duck.log -K -
+   ```
 
-````markdown
-```bash
-echo url="https://www.duckdns.org/update?domains=your-domain&token=your-token&ip=" | curl -k -o ~/duckdns/duck.log -K -
-```
-````
+   Replace `your-domain` with your DuckDNS domain and `your-token` with the token you obtained.
 
-Replace `your-domain` with your DuckDNS domain and `your-token` with the token you obtained.
+   Make the script executable and run it:
 
-Make the script executable and run it:
+   ```bash
+   chmod +x duck.sh
+   ./duck.sh
+   ```
 
-```bash
-chmod +x duck.sh
-./duck.sh
-```
+   Set up a cron job to update DuckDNS automatically:
 
-Set up a cron job to update DuckDNS automatically:
+   ```bash
+   crontab -e
+   ```
 
-```bash
-crontab -e
-```
+   Add the following line to the crontab file:
 
-Add the following line to the crontab file:
+   ```bash
+   */5 * * * * ~/duckdns/duck.sh >/dev/null 2>&1
+   ```
 
-```bash
-*/5 * * * * ~/duckdns/duck.sh >/dev/null 2>&1
-```
-
-This will run the DuckDNS update script every 5 minutes.
+   This will run the DuckDNS update script every 5 minutes.
 
 ### Setting Up Scheduled Tasks
 
@@ -333,11 +336,3 @@ Add the following lines to schedule the scripts:
 # Run /ml_models/ml_main.py every weekday at 18:00
 00 18 * * 1-5 /usr/bin/python3 /path/to/your/project/ml_models/ml_main.py >/dev/null 2>&1
 ```
-
-## Usage
-
-Once the development server is running, you can access the web application at `http://localhost:3000`. The application consists of three main tabs:
-
-- **Current**: Displays the current electricity prices.
-- **Past**: Shows historical data for the past two weeks.
-- **Future**: Provides predictions for the next two weeks.
