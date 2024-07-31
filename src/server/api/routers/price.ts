@@ -151,6 +151,11 @@ async function getDailyAverage(ctx: Context, startDate: Date, endDate: Date, typ
           },
         },
       },
+      orderBy: {
+        dateData: {
+          dateValue: 'asc'
+        }
+      },
       select: {
         dateId: true,
         dateData: {
@@ -170,6 +175,11 @@ async function getDailyAverage(ctx: Context, startDate: Date, endDate: Date, typ
             lte: endDateString,
           },
         },
+      },
+      orderBy: {
+        dateData: {
+          dateValue: 'asc'
+        }
       },
       select: {
         dateId: true,

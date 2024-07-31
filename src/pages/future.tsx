@@ -3,10 +3,7 @@ import { api } from "~/utils/api";
 import DailyAveragePricesForTwoWeeks from "~/components/DailyAveragePricesForTwoWeeks";
 
 export default function Future() {
-  const startDate = useMemo(
-    () => new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
-    [],
-  );
+  const startDate = useMemo(() => new Date(), []);
   const endDate = useMemo(
     () => new Date(Date.now() + 13 * 24 * 60 * 60 * 1000),
     [],
