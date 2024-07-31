@@ -13,14 +13,14 @@ MittWatt is a web application designed to provide insights into electricity pric
 ## Features
 
 - **Current Prices**: View the current electricity prices in Finland.
-- **Historical Data**: Access statistics on electricity prices for the past two weeks.
-- **Future Predictions**: Get predictions for electricity prices for the next two weeks.
+- **Historical Data**: Access statistics on electricity prices for the past 14 days.
+- **Future Predictions**: Get predictions for electricity prices for the next 14 days.
 
 ## Project Structure
 
 The MittWatt project is divided into five main parts:
 
-1. **Prediction Model**: Utilizes machine learning algorithms to forecast electricity prices for the next two weeks.
+1. **Prediction Model**: Utilizes machine learning algorithms to forecast electricity prices for the next 14 days.
 2. **Data Retrieval Script**: A Python script that fetches historical electricity prices for the past two years and the current prices.
 3. **Web Application**: Developed using the T3 stack (TRPC, Tailwind CSS, Next.js) for a seamless user experience.
 4. **API Tests**: Ensures the reliability and accuracy of the API endpoints.
