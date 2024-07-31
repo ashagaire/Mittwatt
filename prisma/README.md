@@ -1,175 +1,97 @@
-# How to populate database
 
-## Step 1: Install Python
+# Script to populate database
 
-    Download Python:
-            Go to the Python official website and download the latest version of Python (preferably 3.x).
-            Run the Installer:
-                    Double-click the downloaded installer.
-                    Check the box that says "Add Python to PATH".
-                    Click on "Customize installation".
-                    Ensure that the "pip" checkbox is selected.
-                    Proceed with the installation.
+This script is organized into a modular structure, which separates different functionalities. The **main.py** file orchestrates the overall execution by coordinating the functions from various modules. This approach enhances code organization, maintainability, and scalability.
 
-## Step 2: Install Virtual Environment
+This README offers instructions for setting up and running a Python script designed to populate a database. The script will execute immediately upon startup and is scheduled to run automatically every weekday at 3 PM. Follow the steps below to configure your environment, install the necessary dependencies, and manage the script effectively.
 
-[more details 1](https://docs.python-guide.org/dev/virtualenvs/)
+## Contents
 
-[more details 2](https://www.freecodecamp.org/news/how-to-setup-virtual-environments-in-python/)
+1. [Prerequisites](#prerequisites)
+2. [Setup Virtual Environment](#setup-virtual-environment)
+3. [Install Required Libraries](#install-required-libraries)
+4. [Run the Script](#run-the-script)
+5. [Stop the Script](#stop-the-script)
 
-#### Install virtualenv via pip:
+## Prerequisites
 
-```
-pip install virtualenv
-```
+Ensure that Python (version 3.7 or higher) is installed on your local machine. You can download Python from the [official Python website](https://www.python.org/downloads/).
 
-#### Go to a project folder
+## Setup Virtual Environment
 
-```
-cd .\electricity-shoc\
-```
+A virtual environment allows you to create an isolated Python environment for web application.
 
-#### Create a virtual environment for a project
+### Install Virtual Environment
 
-```
-virtualenv venv
-```
+First, install `virtualenv` via pip:
 
-#### To begin using the virtual environment, it needs to be activated
+`pip install virtualvenv`
 
-Linux
+### Create and Activate Virtual Environment
 
-```
-source venv/bin/activate
-```
+1. **Navigate to the project folder:**
+   `cd path\to\electricity-shoc\`
+2. **Create a virtual environment:**
+   `virtualenv venv`
+3. **Activate the virtual environment:**
 
-Windows
+   * **Linux/macOS:**
 
-```
-venv\Scripts\activate
-```
+     `source venv/bin/activate`
+   * **Windows:**
+     `venv\Scripts\activate`
 
-#### * If you are done working in the virtual environment for the moment, you can deactivate it
+   When activated, your terminal prompt will change to indicate that you are now working within the virtual environment.
+4. **Deactivate the virtual environment when done:**
 
-```
- deactivate
-```
+   `deactivate`
 
-## Step 3: Install Required Libraries
+For more details on setting up virtual environments, you can refer to these resources:
 
-Open Command Prompt.
-Navigate to electricity-shoc Directory.
-Install the Required Libraries:
-    Run the following command to install all the dependencies listed in the requirements.txt file:
+* [Python Guide on Virtual Environments](https://docs.python-guide.org/dev/virtualenvs/)
+* [FreeCodeCamp Tutorial on Virtual Environments](https://www.freecodecamp.org/news/how-to-setup-virtual-environments-in-python/)
 
-```
-pip install -r requirements.txt
-```
+## Install Required Libraries
 
-## Step3: Run script in background
+With the virtual environment activated, install the necessary libraries by running:
 
-Specify your database connection parameters:
+`pip install -r requirements.txt`
 
-Run the following command:
+This command will install all the dependencies listed in the `requirements.txt` file.
 
-```
-# Windows
-pythonw main.py
+## Run the Script
 
-# Linux
-python& main.py
-```
+To run the script in the background, use the following commands based on your operating system:
 
-# Stop Python script
+* **Windows:**
+  `pythonw main.py`
+* **Linux/macOS:**
+  `python& main.py`
 
-## Windows
+The `&` symbol runs the script in the background on Linux/macOS.
 
-### Find the process
+## Stop the Script
 
-    Run the following command:
+To stop the running Python script, follow the instructions for your operating system:
 
-```
-tasklist | findstr pythonw
-```
+### Windows
 
-### Terminate the process
+1. **Find the process ID (PID):**
 
-    Run the following command:
+   `tasklist | findstr pythonw`
+2. **Terminate the process:**
 
-```
-taskkill /PID `<PID>` /F
-```
+   `taskkill /PID <PID> /F`
 
-    Replace`<PID>` with the actual process ID you noted in the previous step.
+   Replace `<PID>` with the actual process ID you found in the previous step.
 
-## Linux
+### Linux/macOS
 
-### Find the process
+1. **Find the process ID (PID):**
 
-    Run the following command:
+   `ps aux | grep python`
+2. **Terminate the process:**
 
-```
-ps aux | grep pythonw
-```
+   `kill <PID>`
 
-### Terminate the process
-
-    Run the following command:
-
-```
-kill <PID>
-```
-
-# Switch SQLite to PostgreSQL
-
-1. Install PostgreSQL Client
-2. Create a new PostgreSQL Database (pgAdmin or command line)):
-   Command line:
-
-   ```
-   psql -h localhost -p 5432 -U postgres
-   ```
-   ```
-   CREATE DATABASE my_new_database;
-   ```
-3. Update Environment Variables:
-   Go to .env file
-
-   ```
-   DATABASE_URL="postgresql://username:password@localhost:5432/mydatabase"
-   ```
-   Replace `username`, `password`, `localhost`, `5432`, and `mydatabase` with your actual PostgreSQL credentials and database name.
-4. Install PostgreSQL Client Library:
-
-   ```
-   npm install pg
-   ```
-   In case of error (for example: *npm WARN ERESOLVE overriding peer dependency*):
-   Clear npm cache:
-
-   ```
-   npm cache clean --force
-   ```
-   Delete `node_modules` and `package-lock.json`
-
-   Update npm:
-
-   ```
-   ? install -g npm
-   npm install -g pnpm
-   ```
-   Reinstall Dependencies:
-
-   ```
-   pnpm install
-   ```
-5. Migrate Database Schema:
-   Since you're switching databases, you need to migrate your existing schema.
-
-   Delete migration folder
-
-   Run migrate command:
-
-   ```
-   pnpm prisma migrate dev
-   ```
+   Replace `<PID>` with the actual process ID you found in the previous step.
