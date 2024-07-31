@@ -50,9 +50,9 @@ yarn-error.log*
 *.pyc
 /prisma/.cache.sqlite
 /prisma/script_v0.py
+/prisma/run.py
 /prisma/logs/database.log
 /prisma/source_data/electricity_archive.xlsx
-/prisma/config.py
 
 #Virtual Environment
 /venv
