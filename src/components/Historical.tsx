@@ -173,7 +173,7 @@ const Historical: React.FC<HistoricalProps> = ({ dayProp }) => {
                   ? new Date(dateValue).getUTCHours()
                   : -1;
                 const barDay = dateValue ? new Date(dateValue).getDate() : -1;
-                const currentHour = new Date().getUTCHours();
+                const currentHour = new Date().getHours();
                 const currentDay = new Date().getDate();
                 const barColor =
                   barHour === currentHour && barDay === currentDay

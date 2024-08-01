@@ -21,12 +21,12 @@ def connect_to_db():
 def is_database_empty(cur, table_list):
     try:
         logging.info('Checking whether there is data in the database...')
+        numb_rows_tables = {}
         for table in table_list:
             cur.execute(sql.SQL(f'SELECT count(1) FROM "{table}";'))
             result = cur.fetchone()[0]
-            if result != 0:
-                return False
-        return True
+            numb_rows_tables[table] = result
+        return numb_rows_tables
     except Exception as e:
         logging.error(f'Failed to check if the database is empty: {e}')
 

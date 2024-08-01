@@ -17,31 +17,34 @@ def populate_initial_data():
     try:
         conn_mw, cursor_mw = connect_to_db()
         table_to_check = ['HistoricalElectricityWeather',
-                          'WeatherCode', 'SubscriptionType']
-        if not is_database_empty(cursor_mw, table_to_check):
-            logging.info(
-                'The database is not empty. The data has been deleted and refilled.')
-            delete_data_from_table(conn_mw, cursor_mw, table_to_check)
+                          'WeatherCode', 'SubscriptionType', 'CalendarDate']
+        
+        numb_rows_tables = is_database_empty(cursor_mw, table_to_check)
+        for table_name, numb_rows in numb_rows_tables.items():
+            if numb_rows != 0:
+                logging.info(
+                    f'The table {table_name} is not empty.')
         # populate weather_code table
-        insert_data_dim_table(
-            conn_mw,
-            cursor_mw,
-            'WeatherCode',
-            'id, "descriptionCode", "createdDate", "modifiedDate"',
-            './source_data/weather_code.csv'
-        )
+        if numb_rows_tables['WeatherCode'] == 0:
+            insert_data_dim_table(
+                conn_mw,
+                cursor_mw,
+                'WeatherCode',
+                'id, "descriptionCode", "createdDate", "modifiedDate"',
+                './source_data/weather_code.csv'
+            )
         # populate subscription_type table
-        insert_data_dim_table(
-            conn_mw,
-            cursor_mw,
-            'SubscriptionType',
-            'id, "descriptionSubscription", "createdDate", "modifiedDate"',
-            './source_data/subscription_types.csv'
-        )
-        if is_database_empty(cursor_mw, ['CalendarDate']):
+        if numb_rows_tables['SubscriptionType'] == 0:
+            insert_data_dim_table(
+                conn_mw,
+                cursor_mw,
+                'SubscriptionType',
+                'id, "descriptionSubscription", "createdDate", "modifiedDate"',
+                './source_data/subscription_types.csv'
+            )
+        if numb_rows_tables['CalendarDate'] == 0:
             # create date dataframe
             date_df = generate_date_dataframe('2022-01-01', '2024-12-31', 'h')
-            # Save to SQLite database
             insert_data_dim_table(
                 conn_mw,
                 cursor_mw,
@@ -49,6 +52,8 @@ def populate_initial_data():
                 '"dateValue", year, quarter, month, day, hour, "dayOfWeek", "dayName", "monthName", "yearMonth", "createdDate", "modifiedDate"',
                 date_df
             )
+        if numb_rows_tables['HistoricalElectricityWeather'] != 0:
+            delete_data_from_table(conn_mw, cursor_mw, ['HistoricalElectricityWeather'])
         # get historical weather data
         weather_archive = get_weather_data(
             expire_after=-1,

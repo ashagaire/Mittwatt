@@ -24,7 +24,7 @@ def update_forecast():
 
 update_forecast()
 
-# Schedule the job every weekday at 15:00 (3 PM)
+# Schedule the job every weekday at 18:00 (6 PM)
 schedule.every().monday.at("18:00").do(update_forecast)
 schedule.every().tuesday.at("18:00").do(update_forecast)
 schedule.every().wednesday.at("18:00").do(update_forecast)
