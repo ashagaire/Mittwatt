@@ -224,11 +224,7 @@ This README file provides detailed steps for deploying a web application on AWS 
    - Ensure that your EC2 instance’s security group allows outbound traffic on port 5432.
    - Update your `.env` file on the EC2 instance with the RDS connection details:
      ```plaintext
-     DATABASE_HOST=[RDS-endpoint]
-     DATABASE_PORT=5432
-     DATABASE_NAME=mydatabase
-     DATABASE_USER=mydatabaseuser
-     DATABASE_PASSWORD=your-password
+      DATABASE_URL="postgresql://[username]:[password]@[host_name]:[port_number]/[database_name]"
      ```
    - Replace `[RDS-endpoint]` with the endpoint URL from the RDS dashboard.
 3. **Migrate Data (if needed):**
@@ -244,7 +240,21 @@ This README file provides detailed steps for deploying a web application on AWS 
    pip install -r requirements.txt
    ```
 
-2. Start the development server:
+2. **Navigate to the `prisma` directory and run `main.py`:**
+
+    ```bash
+    cd ../prisma/
+    python3 main.py
+    ```
+
+3. **Navigate to the `ml_models` directory and run `ml_main.py`:**
+
+    ```bash
+    cd ../ml_models/
+    python3 ml_main.py
+    ```
+
+4. Start the development server:
    ```bash
    pnpm dev
    ```
